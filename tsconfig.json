@@ -1,0 +1,16 @@
+{
+    "compilerOptions": {
+        "target": "es2018",
+        "module": "commonjs",
+        "strict": true,
+        "esModuleInterop": true,
+        "outDir": "dist",
+        "resolveJsonModule": true,
+        "esModuleInterop": true,
+        "noImplicitAny": false
+        // optional:
+        // "suppressImplicitAnyIndexErrors": true
+    },
+    "include": ["./scripts", "./test", "01-deploy-obscurity-token.ts", "./deploy-helpers"],
+    "files": ["./hardhat.config.ts", "./helper-hardhat-config.ts"]
+}
