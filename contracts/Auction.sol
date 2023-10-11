@@ -149,17 +149,21 @@ contract Auction is Ownable {
         require(!item.ended, "Auction has already ended");
         require(block.timestamp >= item.auctionEndTime, "Auction has not yet ended");
         require(msg.sender == item.seller || msg.sender == item.highestBidder, "Only the seller or highest bidder can end the auction");
-
         item.ended = true;
-
-        // If there are bids above the reserve price, transfer the item to the highest bidder
-        if (item.highestBid >= item.reservePrice) {
-            // Transfer the ERC-20 tokens from the contract to the seller
-            token.transfer(item.seller, item.highestBid);
-        } else {
-            // If the reserve price is not met, refund the highest bidder
-            token.transfer(item.highestBidder, item.highestBid);
+        uint256[] storage activeAuctionsArr = activeAuctionOwners[msg.sender].activeAuctions;
+        for(uint256 i = 0; i<activeAuctionsArr.length; i++){
+            if(itemId == 1){
+            activeAuctionsArr[i] = activeAuctionsArr[activeAuctionsArr.length -1];
+            activeAuctionsArr.pop();
+            activeAuctionOwners[msg.sender].activeAuctions = activeAuctionsArr;
+            break;
+            }
         }
+        if(item.highestBid == 0){
+            return;
+        }
+        token.transfer(item.seller, item.highestBid);
+        
     }
 
         // Function to get information about a specific auction item

@@ -107,4 +107,13 @@ describe("Auction Tests", async () => {
             "You can't redeem tokens while ongoing auctions persist"
         );
     });
+
+    it("Successfully allows the auctioneer to withdraw tokens after existing auctions concluded", async () => {
+        await obscurityToken.approve(auctionContract.address, 500);
+        await auctionContract.stakeTokens(500);
+        await auctionContract.createAuctionItem(1, "testItem", 1000);
+        await increase(60 * 60 * 48); // increase time by 2 days
+        await auctionContract.endAuction(1);
+        await auctionContract.relinquishTokensToOwner();
+    });
 });
