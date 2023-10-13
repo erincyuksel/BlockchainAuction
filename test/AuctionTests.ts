@@ -116,4 +116,23 @@ describe("Auction Tests", async () => {
         await auctionContract.endAuction(1);
         await auctionContract.relinquishTokensToOwner();
     });
+
+    it("Successfully extends auction time when last bid is made in last 5 minutes", async () => {
+        await obscurityToken.transfer(buyer.address, 1500);
+        await obscurityToken.approve(auctionContract.address, 500);
+        await auctionContract.stakeTokens(500);
+        await auctionContract.createAuctionItem(1, "testItem", 1000);
+        let item = await auctionContract.getAuctionItem(1);
+        let originalEndingTime = item[6].toNumber();
+        await increase(60 * 60 * 24 - 300); // leave less than 5 minutes until the auction expires
+        await obscurityToken.connect(buyer).approve(auctionContract.address, 1100);
+        await auctionContract.connect(buyer).placeBid(1, 1100);
+        item = await auctionContract.getAuctionItem(1);
+        let extendedEndingTime = item[6].toNumber();
+
+        expect(extendedEndingTime - originalEndingTime).to.be.closeTo(
+            extendedEndingTime - originalEndingTime,
+            500
+        );
+    });
 });

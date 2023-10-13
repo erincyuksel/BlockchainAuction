@@ -120,6 +120,7 @@ contract Auction is Ownable {
     function placeBid(uint256 itemId, uint256 bidAmount) external payable itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
 
+        require(item.seller != msg.sender, "Owner can't bid on their auctions");
         require(item.reservePrice < bidAmount, "Bid must be higher than the reserve price");
         require(!item.ended, "Auction has ended");
         require(block.timestamp < item.auctionEndTime, "Auction has expired");
@@ -135,6 +136,9 @@ contract Auction is Ownable {
 
         item.highestBid = bidAmount;
         item.highestBidder = payable(msg.sender);
+        if((item.auctionEndTime - block.timestamp) <= 500){
+            auctionItems[itemId].auctionEndTime = 500 - (item.auctionEndTime - block.timestamp) + item.auctionEndTime;
+        }
     }
 
     // Function to get the current block timestamp
