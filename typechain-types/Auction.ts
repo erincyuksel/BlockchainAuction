@@ -26,8 +26,11 @@ export interface AuctionInterface extends utils.Interface {
     "createAuctionItem(uint256,string,uint256)": FunctionFragment;
     "endAuction(uint256)": FunctionFragment;
     "getActiveAuctioneer()": FunctionFragment;
+    "getAuctionDuration()": FunctionFragment;
     "getAuctionItem(uint256)": FunctionFragment;
+    "getConcurrentAuctionsPerUser()": FunctionFragment;
     "getCurrentTimestamp()": FunctionFragment;
+    "getTokensToStake()": FunctionFragment;
     "owner()": FunctionFragment;
     "placeBid(uint256,uint256)": FunctionFragment;
     "relinquishTokensToOwner()": FunctionFragment;
@@ -60,11 +63,23 @@ export interface AuctionInterface extends utils.Interface {
     values?: undefined
   ): string;
   encodeFunctionData(
+    functionFragment: "getAuctionDuration",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getAuctionItem",
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "getConcurrentAuctionsPerUser",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "getCurrentTimestamp",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getTokensToStake",
     values?: undefined
   ): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -119,11 +134,23 @@ export interface AuctionInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAuctionDuration",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAuctionItem",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getConcurrentAuctionsPerUser",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getCurrentTimestamp",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getTokensToStake",
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "owner", data: BytesLike): Result;
@@ -258,6 +285,8 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber[], boolean]>;
 
+    getAuctionDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
+
     getAuctionItem(
       itemId: BigNumberish,
       overrides?: CallOverrides
@@ -274,7 +303,13 @@ export interface Auction extends BaseContract {
       ]
     >;
 
+    getConcurrentAuctionsPerUser(
+      overrides?: CallOverrides
+    ): Promise<[BigNumber]>;
+
     getCurrentTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
+
+    getTokensToStake(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     owner(overrides?: CallOverrides): Promise<[string]>;
 
@@ -366,6 +401,8 @@ export interface Auction extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, BigNumber[], boolean]>;
 
+  getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
   getAuctionItem(
     itemId: BigNumberish,
     overrides?: CallOverrides
@@ -382,7 +419,11 @@ export interface Auction extends BaseContract {
     ]
   >;
 
+  getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
+
   getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+  getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
 
   owner(overrides?: CallOverrides): Promise<string>;
 
@@ -471,6 +512,8 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, BigNumber[], boolean]>;
 
+    getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAuctionItem(
       itemId: BigNumberish,
       overrides?: CallOverrides
@@ -487,7 +530,11 @@ export interface Auction extends BaseContract {
       ]
     >;
 
+    getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
+
     getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<string>;
 
@@ -569,12 +616,18 @@ export interface Auction extends BaseContract {
 
     getActiveAuctioneer(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAuctionItem(
       itemId: BigNumberish,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
+    getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
+
     getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
 
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -645,14 +698,24 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getAuctionDuration(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getAuctionItem(
       itemId: BigNumberish,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getConcurrentAuctionsPerUser(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getCurrentTimestamp(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
+
+    getTokensToStake(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 

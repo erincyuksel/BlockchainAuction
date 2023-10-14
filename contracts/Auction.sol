@@ -48,7 +48,7 @@ contract Auction is Ownable {
     }
 
     modifier belowAuctionCount() {
-        require(activeAuctionOwners[msg.sender].activeAuctions.length <= concurrentAuctionsPerUser);
+        require(activeAuctionOwners[msg.sender].activeAuctions.length < concurrentAuctionsPerUser, "You can't have any more active auctions");
         _;
     }
 
@@ -170,7 +170,9 @@ contract Auction is Ownable {
         
     }
 
-        // Function to get information about a specific auction item
+    // GETTERS
+
+    // Function to get information about a specific auction item
     function getAuctionItem(uint256 itemId) external view itemExists(itemId) returns (
         uint256,
         string memory,
@@ -206,6 +208,18 @@ contract Auction is Ownable {
             auctioneer.activeAuctions,
             auctioneer.isInitialized
         );
+    }
+
+    function getTokensToStake() external view returns(uint256){
+        return tokensToStake;
+    }
+
+    function getConcurrentAuctionsPerUser() external view returns(uint256){
+        return concurrentAuctionsPerUser;
+    }
+
+    function getAuctionDuration() external view returns(uint256){
+        return auctionDuration;
     }
 
 }
