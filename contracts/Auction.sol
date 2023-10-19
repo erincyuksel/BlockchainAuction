@@ -6,16 +6,30 @@ import "@openzeppelin/contracts/access/Ownable.sol";
 import "./ObscurityToken.sol";
 
 contract Auction is Ownable {
+    // enums
+
+    enum EscrowState {
+        AwaitingDeliveryAddress, // Waiting for winner to provide address
+        PreparingItem, // Seller preparing item
+        ItemOnDelivery, // Seller sent item on delivery
+        ItemReceived, // Buyer received the item
+        Dispute, // There is a dispute,
+        DisputeResolved // Dispute has been resolved
+    }
+
+    // structs
 
     struct AuctionItem {
-        uint256 itemId;         // Unique identifier for the item
-        string itemName;        // Name or description of the item
+        uint256 itemId; // Unique identifier for the item
+        string itemName; // Name or description of the item
         address payable seller; // Address of the seller
-        uint256 reservePrice;   // Minimum price at which the item can be sold
-        uint256 highestBid;     // Current highest bid
+        uint256 reservePrice; // Minimum price at which the item can be sold
+        uint256 highestBid; // Current highest bid
         address payable highestBidder; // Address of the highest bidder
         uint256 auctionEndTime; // Unix timestamp when the auction ends
-        bool ended;             // Flag to indicate if the auction has ended
+        bool ended; // Flag to indicate if the auction has ended
+        string deliveryAddress; // Delivery address of the winner, will be set by winner after auction ends
+        EscrowState escrowState;
     }
 
     struct ActiveAuctioneer {
@@ -24,8 +38,10 @@ contract Auction is Ownable {
         bool isInitialized;
     }
 
+    // fields
     mapping(uint256 => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
+    mapping(uint256 => bool) public disputeResolved;
     uint256 tokensToStake = 500;
     ObscurityToken token;
 
@@ -43,17 +59,39 @@ contract Auction is Ownable {
     }
 
     modifier stakedCoinRequired() {
-        require(activeAuctionOwners[msg.sender].stakedAmount >= tokensToStake, "Not enough tokens staked to create an auction");
+        require(
+            activeAuctionOwners[msg.sender].stakedAmount >= tokensToStake,
+            "Not enough tokens staked to create an auction"
+        );
         _;
     }
 
     modifier belowAuctionCount() {
-        require(activeAuctionOwners[msg.sender].activeAuctions.length < concurrentAuctionsPerUser, "You can't have any more active auctions");
+        require(
+            activeAuctionOwners[msg.sender].activeAuctions.length < concurrentAuctionsPerUser,
+            "You can't have any more active auctions"
+        );
         _;
     }
 
-        constructor(ObscurityToken _token) {
+    modifier isOwner(uint256 itemId) {
+        require(
+            auctionItems[itemId].seller == msg.sender,
+            "Only auction owner can call this method"
+        );
+        _;
+    }
+
+    constructor(ObscurityToken _token) {
         token = _token;
+    }
+
+    modifier isWinner(uint256 itemId) {
+        require(
+            (msg.sender == auctionItems[itemId].highestBidder) && (auctionItems[itemId].ended),
+            "You haven't won the auction or its still in progress"
+        );
+        _;
     }
 
     // Functions to be called by DAO
@@ -73,7 +111,7 @@ contract Auction is Ownable {
 
     function stakeTokens(uint256 amount) external {
         token.transferFrom(msg.sender, address(this), amount);
-        if(activeAuctionOwners[msg.sender].isInitialized){
+        if (activeAuctionOwners[msg.sender].isInitialized) {
             activeAuctionOwners[msg.sender].stakedAmount += amount;
         } else {
             activeAuctionOwners[msg.sender] = ActiveAuctioneer({
@@ -85,7 +123,10 @@ contract Auction is Ownable {
     }
 
     function relinquishTokensToOwner() external {
-        require(activeAuctionOwners[msg.sender].activeAuctions.length == 0, "You can't redeem tokens while ongoing auctions persist");
+        require(
+            activeAuctionOwners[msg.sender].activeAuctions.length == 0,
+            "You can't redeem tokens while ongoing auctions persist"
+        );
         token.approve(address(this), activeAuctionOwners[msg.sender].stakedAmount);
         token.transferFrom(address(this), msg.sender, activeAuctionOwners[msg.sender].stakedAmount);
     }
@@ -108,13 +149,50 @@ contract Auction is Ownable {
             highestBid: 0,
             highestBidder: payable(address(0)),
             auctionEndTime: auctionEndTime,
-            ended: false
+            ended: false,
+            deliveryAddress: "",
+            escrowState: EscrowState.AwaitingDeliveryAddress
         });
 
         activeAuctionOwners[msg.sender].activeAuctions.push(itemId);
         emit AuctionItemCreated(itemId, itemName);
     }
 
+    function setDeliveryAddress(
+        uint256 itemId,
+        string memory deliveryAddress
+    ) external itemExists(itemId) isWinner(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+        item.deliveryAddress = deliveryAddress;
+    }
+
+    function transitionEscrowState(
+        uint256 itemId,
+        EscrowState nextState
+    ) external itemExists(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+
+        require(
+            (msg.sender == item.seller &&
+                nextState == EscrowState.PreparingItem &&
+                item.escrowState == EscrowState.AwaitingDeliveryAddress) ||
+                (msg.sender == item.seller &&
+                    nextState == EscrowState.ItemOnDelivery &&
+                    item.escrowState == EscrowState.PreparingItem) ||
+                (msg.sender == item.highestBidder &&
+                    nextState == EscrowState.ItemReceived &&
+                    item.escrowState == EscrowState.ItemOnDelivery) ||
+                (msg.sender == item.highestBidder &&
+                    nextState == EscrowState.ItemReceived &&
+                    item.escrowState == EscrowState.ItemOnDelivery),
+            "Invalid state transition"
+        );
+
+        item.escrowState = nextState;
+        if (nextState == EscrowState.ItemReceived) {
+            token.transfer(item.seller, item.highestBid);
+        }
+    }
 
     // Function to place a bid
     function placeBid(uint256 itemId, uint256 bidAmount) external payable itemExists(itemId) {
@@ -136,8 +214,11 @@ contract Auction is Ownable {
 
         item.highestBid = bidAmount;
         item.highestBidder = payable(msg.sender);
-        if((item.auctionEndTime - block.timestamp) <= 500){
-            auctionItems[itemId].auctionEndTime = 500 - (item.auctionEndTime - block.timestamp) + item.auctionEndTime;
+        if ((item.auctionEndTime - block.timestamp) <= 500) {
+            auctionItems[itemId].auctionEndTime =
+                500 -
+                (item.auctionEndTime - block.timestamp) +
+                item.auctionEndTime;
         }
     }
 
@@ -152,37 +233,45 @@ contract Auction is Ownable {
 
         require(!item.ended, "Auction has already ended");
         require(block.timestamp >= item.auctionEndTime, "Auction has not yet ended");
-        require(msg.sender == item.seller || msg.sender == item.highestBidder, "Only the seller or highest bidder can end the auction");
+        require(
+            msg.sender == item.seller || msg.sender == item.highestBidder,
+            "Only the seller or highest bidder can end the auction"
+        );
         item.ended = true;
         uint256[] storage activeAuctionsArr = activeAuctionOwners[msg.sender].activeAuctions;
-        for(uint256 i = 0; i<activeAuctionsArr.length; i++){
-            if(itemId == 1){
-            activeAuctionsArr[i] = activeAuctionsArr[activeAuctionsArr.length -1];
-            activeAuctionsArr.pop();
-            activeAuctionOwners[msg.sender].activeAuctions = activeAuctionsArr;
-            break;
+        for (uint256 i = 0; i < activeAuctionsArr.length; i++) {
+            if (itemId == 1) {
+                activeAuctionsArr[i] = activeAuctionsArr[activeAuctionsArr.length - 1];
+                activeAuctionsArr.pop();
+                activeAuctionOwners[msg.sender].activeAuctions = activeAuctionsArr;
+                break;
             }
         }
-        if(item.highestBid == 0){
+        if (item.highestBid == 0) {
             return;
         }
-        token.transfer(item.seller, item.highestBid);
-        
     }
 
     // GETTERS
 
     // Function to get information about a specific auction item
-    function getAuctionItem(uint256 itemId) external view itemExists(itemId) returns (
-        uint256,
-        string memory,
-        address payable,
-        uint256,
-        uint256,
-        address payable,
-        uint256,
-        bool
-    ) {
+    function getAuctionItem(
+        uint256 itemId
+    )
+        external
+        view
+        itemExists(itemId)
+        returns (
+            uint256,
+            string memory,
+            address payable,
+            uint256,
+            uint256,
+            address payable,
+            uint256,
+            bool
+        )
+    {
         AuctionItem storage item = auctionItems[itemId];
 
         return (
@@ -197,29 +286,26 @@ contract Auction is Ownable {
         );
     }
 
-    function getActiveAuctioneer() external view returns (
-        uint256,
-        uint256[] memory,
-        bool
-    ){
-        ActiveAuctioneer storage auctioneer = activeAuctionOwners[msg.sender];
-        return (
-            auctioneer.stakedAmount,
-            auctioneer.activeAuctions,
-            auctioneer.isInitialized
-        );
+    function getDeliveryAddress(
+        uint256 itemId
+    ) external view itemExists(itemId) isOwner(itemId) returns (string memory) {
+        return auctionItems[itemId].deliveryAddress;
     }
 
-    function getTokensToStake() external view returns(uint256){
+    function getActiveAuctioneer() external view returns (uint256, uint256[] memory, bool) {
+        ActiveAuctioneer storage auctioneer = activeAuctionOwners[msg.sender];
+        return (auctioneer.stakedAmount, auctioneer.activeAuctions, auctioneer.isInitialized);
+    }
+
+    function getTokensToStake() external view returns (uint256) {
         return tokensToStake;
     }
 
-    function getConcurrentAuctionsPerUser() external view returns(uint256){
+    function getConcurrentAuctionsPerUser() external view returns (uint256) {
         return concurrentAuctionsPerUser;
     }
 
-    function getAuctionDuration() external view returns(uint256){
+    function getAuctionDuration() external view returns (uint256) {
         return auctionDuration;
     }
-
 }

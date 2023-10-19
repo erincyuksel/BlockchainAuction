@@ -6,7 +6,8 @@
     "scripts": {
         "allTests": "mocha --timeout 10000 -r  ts-node/register 'test/*.ts'",
         "auctionTests": "mocha --timeout 10000 -r  ts-node/register 'test/AuctionTests.ts'",
-        "governanceTests": "mocha --timeout 10000 -r  ts-node/register 'test/GovernanceTests.ts'"
+        "governanceTests": "mocha --timeout 10000 -r  ts-node/register 'test/GovernanceTests.ts'",
+        "escrowTests": "mocha --timeout 10000 -r  ts-node/register 'test/EscrowTests.ts'"
     },
     "devDependencies": {
         "@nomicfoundation/hardhat-network-helpers": "^1.0.9",
