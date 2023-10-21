@@ -5,7 +5,6 @@ import "@nomicfoundation/hardhat-chai-matchers";
 import { VOTING_DELAY, VOTING_PERIOD, MIN_DELAY } from "../helper-hardhat-config";
 import { mine } from "@nomicfoundation/hardhat-network-helpers";
 import { increase } from "@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time";
-import * as sigUtils from "@metamask/eth-sig-util";
 
 describe("Governor Voting Tests", async () => {
     let governor: GovernorContract;
@@ -23,25 +22,9 @@ describe("Governor Voting Tests", async () => {
 
         [deployer, seller, buyer] = await ethers.getSigners();
 
-        await auction.setPubKey(
-            sigUtils.getEncryptionPublicKey(
-                "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
-            )
-        );
-        await auction
-            .connect(seller)
-            .setPubKey(
-                sigUtils.getEncryptionPublicKey(
-                    "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
-                )
-            );
-        await auction
-            .connect(buyer)
-            .setPubKey(
-                sigUtils.getEncryptionPublicKey(
-                    "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a"
-                )
-            );
+        await auction.setPubKey("3C0Bx7xLMBBpM0oONXB9il6T5GHts1b/z6cqsBYfoXM=");
+        await auction.connect(seller).setPubKey("3C0Bx7xLMBBpM0oONXB9il6T5GHts1b/z6cqsBYfoXM=");
+        await auction.connect(buyer).setPubKey("3C0Bx7xLMBBpM0oONXB9il6T5GHts1b/z6cqsBYfoXM=");
     });
 
     it("Auction duration can only be changed through governance", async () => {
@@ -99,7 +82,7 @@ describe("Governor Voting Tests", async () => {
 
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await expect(auction.createAuctionItem(1, "testItem", 1000)).to.be.revertedWith(
+        await expect(auction.createAuctionItem("test", "testItem", 1000)).to.be.revertedWith(
             "Not enough tokens staked to create an auction"
         );
     });
@@ -140,12 +123,12 @@ describe("Governor Voting Tests", async () => {
 
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await auction.createAuctionItem(1, "testItem1", 1000);
-        await auction.createAuctionItem(2, "testItem2", 1000);
-        await auction.createAuctionItem(3, "testItem3", 1000);
+        await auction.createAuctionItem("test1", "testItem1", 1000);
+        await auction.createAuctionItem("test2", "testItem2", 1000);
+        await auction.createAuctionItem("test3", "testItem3", 1000);
 
         // 4th one should fail
-        await expect(auction.createAuctionItem(4, "testItem4", 1000)).to.be.revertedWith(
+        await expect(auction.createAuctionItem("test4", "testItem4", 1000)).to.be.revertedWith(
             "You can't have any more active auctions"
         );
     });
@@ -184,9 +167,9 @@ describe("Governor Voting Tests", async () => {
         // try to create 3 ongoing auctions
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await auction.createAuctionItem(1, "testItem", 1000);
+        await auction.createAuctionItem("test", "testItem", 1000);
         await increase(60 * 60 * 48 - 3600);
-        await expect(auction.endAuction(1)).to.be.revertedWith("Auction has not yet ended");
+        await expect(auction.endAuction("test")).to.be.revertedWith("Auction has not yet ended");
     });
 
     // UTILS

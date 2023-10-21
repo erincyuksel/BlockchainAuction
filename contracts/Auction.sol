@@ -20,7 +20,7 @@ contract Auction is Ownable {
     // structs
 
     struct AuctionItem {
-        uint256 itemId; // Unique identifier for the item
+        string itemId; // Unique identifier for the item
         string itemName; // Name or description of the item
         address payable seller; // Address of the seller
         uint256 reservePrice; // Minimum price at which the item can be sold
@@ -29,33 +29,34 @@ contract Auction is Ownable {
         uint256 auctionEndTime; // Unix timestamp when the auction ends
         bool ended; // Flag to indicate if the auction has ended
         string deliveryAddress; // Delivery address of the winner, will be set by winner after auction ends
-        string[] chatLogs; // Chat log between winner and owner
+        string[] privateChatLogs; // Chat log between winner and owner
+        string[] committeeChatLogs; // In case of dispute, discussion will be held here
         EscrowState escrowState;
     }
 
     struct ActiveAuctioneer {
         uint256 stakedAmount;
-        uint256[] activeAuctions;
+        string[] activeAuctions;
         bool isInitialized;
     }
 
     // fields
-    mapping(uint256 => AuctionItem) public auctionItems;
+    mapping(string => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
     mapping (address => string) public pubKeys;
     uint256 tokensToStake = 500;
     ObscurityToken token;
 
     // fields that get edited with DAO votes
-    uint256 auctionDuration = 60 * 60 * 24; // 1 day
-    uint256 concurrentAuctionsPerUser = 2;
+    uint64 auctionDuration = 60 * 60 * 24; // 1 day
+    uint8 concurrentAuctionsPerUser = 2;
 
     // events
-    event AuctionItemCreated(uint256 indexed itemId, string itemName);
+    event AuctionItemCreated(string indexed itemId, string itemName);
 
     // modifiers
-    modifier itemExists(uint256 itemId) {
-        require(auctionItems[itemId].itemId == itemId, "Item does not exist");
+    modifier itemExists(string calldata itemId) {
+        require(compareStrings(auctionItems[itemId].itemId, itemId), "Item does not exist");
         _;
     }
 
@@ -75,7 +76,7 @@ contract Auction is Ownable {
         _;
     }
 
-    modifier isOwner(uint256 itemId) {
+    modifier isOwner(string calldata itemId) {
         require(
             auctionItems[itemId].seller == msg.sender,
             "Only auction owner can call this method"
@@ -83,7 +84,7 @@ contract Auction is Ownable {
         _;
     }
 
-    modifier isWinner(uint256 itemId) {
+    modifier isWinner(string calldata itemId) {
         require(
             (msg.sender == auctionItems[itemId].highestBidder) && (auctionItems[itemId].ended),
             "You haven't won the auction or its still in progress"
@@ -102,11 +103,11 @@ contract Auction is Ownable {
 
 
     // Functions to be called by DAO
-    function setAuctionDuration(uint256 duration) external onlyOwner {
+    function setAuctionDuration(uint64 duration) external onlyOwner {
         auctionDuration = duration;
     }
 
-    function setConcurrentAuctionsPerUser(uint256 auctionCount) external onlyOwner {
+    function setConcurrentAuctionsPerUser(uint8 auctionCount) external onlyOwner {
         concurrentAuctionsPerUser = auctionCount;
     }
 
@@ -121,9 +122,10 @@ contract Auction is Ownable {
         if (activeAuctionOwners[msg.sender].isInitialized) {
             activeAuctionOwners[msg.sender].stakedAmount += amount;
         } else {
+            string[] memory init;
             activeAuctionOwners[msg.sender] = ActiveAuctioneer({
                 stakedAmount: amount,
-                activeAuctions: new uint256[](0),
+                activeAuctions: init,
                 isInitialized: true
             });
         }
@@ -139,11 +141,11 @@ contract Auction is Ownable {
     }
 
     function createAuctionItem(
-        uint256 itemId,
+        string calldata itemId,
         string memory itemName,
         uint256 reservePrice
     ) external stakedCoinRequired belowAuctionCount hasPubKey{
-        require(auctionItems[itemId].itemId == 0, "Item already exists");
+        require(!compareStrings(itemId, auctionItems[itemId].itemId), "Item already exists");
         require(reservePrice > 0, "Reserve price must be greater than zero");
 
         uint256 auctionEndTime = block.timestamp + auctionDuration;
@@ -158,7 +160,8 @@ contract Auction is Ownable {
             auctionEndTime: auctionEndTime,
             ended: false,
             deliveryAddress: "",
-            chatLogs: init,
+            privateChatLogs: init,
+            committeeChatLogs: init,
             escrowState: EscrowState.AwaitingDeliveryAddress
         });
 
@@ -168,7 +171,7 @@ contract Auction is Ownable {
 
 
     // Function to place a bid
-    function placeBid(uint256 itemId, uint256 bidAmount) external payable itemExists(itemId) hasPubKey{
+    function placeBid(string calldata itemId, uint256 bidAmount) external payable itemExists(itemId) hasPubKey{
         AuctionItem storage item = auctionItems[itemId];
 
         require(item.seller != msg.sender, "Owner can't bid on their auctions");
@@ -196,7 +199,7 @@ contract Auction is Ownable {
     }
 
     // Function to end an auction and finalize the highest bidder
-    function endAuction(uint256 itemId) external payable itemExists(itemId) {
+    function endAuction(string calldata itemId) external payable itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
 
         require(!item.ended, "Auction has already ended");
@@ -206,12 +209,11 @@ contract Auction is Ownable {
             "Only the seller or highest bidder can end the auction"
         );
         item.ended = true;
-        uint256[] storage activeAuctionsArr = activeAuctionOwners[msg.sender].activeAuctions;
+        string[] storage activeAuctionsArr = activeAuctionOwners[msg.sender].activeAuctions;
         for (uint256 i = 0; i < activeAuctionsArr.length; i++) {
-            if (itemId == 1) {
+            if (compareStrings(itemId, item.itemId)) {
                 activeAuctionsArr[i] = activeAuctionsArr[activeAuctionsArr.length - 1];
                 activeAuctionsArr.pop();
-                activeAuctionOwners[msg.sender].activeAuctions = activeAuctionsArr;
                 break;
             }
         }
@@ -220,23 +222,24 @@ contract Auction is Ownable {
         }
     }
 
-    function sendChat(uint256 itemId, string calldata message) external itemExists(itemId){
+    function sendChat(string calldata itemId, string calldata message) external itemExists(itemId){
         AuctionItem storage item = auctionItems[itemId];
         require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
-        item.chatLogs.push(message);
+        item.privateChatLogs.push(message);
     }
+
 
     // GETTERS
 
     // Function to get information about a specific auction item
     function getAuctionItem(
-        uint256 itemId
+        string calldata itemId
     )
         external
         view
         itemExists(itemId)
         returns (
-            uint256,
+            string memory,
             string memory,
             address payable,
             uint256,
@@ -261,12 +264,12 @@ contract Auction is Ownable {
     }
 
     function getDeliveryAddress(
-        uint256 itemId
+        string calldata itemId
     ) external view itemExists(itemId) isOwner(itemId) returns (string memory) {
         return auctionItems[itemId].deliveryAddress;
     }
 
-    function getActiveAuctioneer() external view returns (uint256, uint256[] memory, bool) {
+    function getActiveAuctioneer() external view returns (uint256, string[] memory, bool) {
         ActiveAuctioneer storage auctioneer = activeAuctionOwners[msg.sender];
         return (auctioneer.stakedAmount, auctioneer.activeAuctions, auctioneer.isInitialized);
     }
@@ -288,11 +291,11 @@ contract Auction is Ownable {
         return block.timestamp;
     }
 
-    function getChatLogOfItem(uint256 itemId) external view itemExists(itemId) returns (string[] memory){
+    function getChatLogOfItem(string calldata itemId) external view itemExists(itemId) returns (string[] memory){
         AuctionItem storage item = auctionItems[itemId];
         require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
 
-        return item.chatLogs;
+        return item.privateChatLogs;
     }
 
     function getPubKey(address adr) external view returns (string memory){
@@ -302,7 +305,7 @@ contract Auction is Ownable {
     // SETTERS
 
     function setDeliveryAddress(
-        uint256 itemId,
+        string calldata itemId,
         string memory deliveryAddress
     ) external itemExists(itemId) isWinner(itemId) {
         AuctionItem storage item = auctionItems[itemId];
@@ -316,11 +319,11 @@ contract Auction is Ownable {
     // Escrow Functions
 
     function transitionEscrowState(
-        uint256 itemId,
+        string calldata itemId,
         EscrowState nextState
     ) external itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
-
+        require(item.escrowState != EscrowState.Dispute, "Cant resume escrow processes without dispute resolution");
         require(
             (msg.sender == item.seller &&
                 nextState == EscrowState.PreparingItem &&
@@ -343,5 +346,16 @@ contract Auction is Ownable {
         if (nextState == EscrowState.ItemReceived) {
             token.transfer(item.seller, item.highestBid);
         }
+    }
+
+    function raiseDispute(string calldata itemId) external itemExists(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+        require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
+        item.escrowState = EscrowState.Dispute;
+    }
+
+    // Utils
+        function compareStrings(string memory a, string memory b) public pure returns (bool) {
+        return keccak256(abi.encodePacked(a)) == keccak256(abi.encodePacked(b));
     }
 }

@@ -22,32 +22,34 @@ export interface AuctionInterface extends utils.Interface {
   contractName: "Auction";
   functions: {
     "activeAuctionOwners(address)": FunctionFragment;
-    "auctionItems(uint256)": FunctionFragment;
-    "createAuctionItem(uint256,string,uint256)": FunctionFragment;
-    "endAuction(uint256)": FunctionFragment;
+    "auctionItems(string)": FunctionFragment;
+    "compareStrings(string,string)": FunctionFragment;
+    "createAuctionItem(string,string,uint256)": FunctionFragment;
+    "endAuction(string)": FunctionFragment;
     "getActiveAuctioneer()": FunctionFragment;
     "getAuctionDuration()": FunctionFragment;
-    "getAuctionItem(uint256)": FunctionFragment;
-    "getChatLogOfItem(uint256)": FunctionFragment;
+    "getAuctionItem(string)": FunctionFragment;
+    "getChatLogOfItem(string)": FunctionFragment;
     "getConcurrentAuctionsPerUser()": FunctionFragment;
     "getCurrentTimestamp()": FunctionFragment;
-    "getDeliveryAddress(uint256)": FunctionFragment;
+    "getDeliveryAddress(string)": FunctionFragment;
     "getPubKey(address)": FunctionFragment;
     "getTokensToStake()": FunctionFragment;
     "owner()": FunctionFragment;
-    "placeBid(uint256,uint256)": FunctionFragment;
+    "placeBid(string,uint256)": FunctionFragment;
     "pubKeys(address)": FunctionFragment;
+    "raiseDispute(string)": FunctionFragment;
     "relinquishTokensToOwner()": FunctionFragment;
     "renounceOwnership()": FunctionFragment;
-    "sendChat(uint256,string)": FunctionFragment;
-    "setAuctionDuration(uint256)": FunctionFragment;
-    "setConcurrentAuctionsPerUser(uint256)": FunctionFragment;
-    "setDeliveryAddress(uint256,string)": FunctionFragment;
+    "sendChat(string,string)": FunctionFragment;
+    "setAuctionDuration(uint64)": FunctionFragment;
+    "setConcurrentAuctionsPerUser(uint8)": FunctionFragment;
+    "setDeliveryAddress(string,string)": FunctionFragment;
     "setPubKey(string)": FunctionFragment;
     "setTokensToStake(uint256)": FunctionFragment;
     "stakeTokens(uint256)": FunctionFragment;
     "transferOwnership(address)": FunctionFragment;
-    "transitionEscrowState(uint256,uint8)": FunctionFragment;
+    "transitionEscrowState(string,uint8)": FunctionFragment;
   };
 
   encodeFunctionData(
@@ -56,16 +58,17 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "auctionItems",
-    values: [BigNumberish]
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "compareStrings",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "createAuctionItem",
-    values: [BigNumberish, string, BigNumberish]
+    values: [string, string, BigNumberish]
   ): string;
-  encodeFunctionData(
-    functionFragment: "endAuction",
-    values: [BigNumberish]
-  ): string;
+  encodeFunctionData(functionFragment: "endAuction", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getActiveAuctioneer",
     values?: undefined
@@ -76,11 +79,11 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getAuctionItem",
-    values: [BigNumberish]
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getChatLogOfItem",
-    values: [BigNumberish]
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getConcurrentAuctionsPerUser",
@@ -92,7 +95,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getDeliveryAddress",
-    values: [BigNumberish]
+    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "getPubKey", values: [string]): string;
   encodeFunctionData(
@@ -102,9 +105,13 @@ export interface AuctionInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "placeBid",
-    values: [BigNumberish, BigNumberish]
+    values: [string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "pubKeys", values: [string]): string;
+  encodeFunctionData(
+    functionFragment: "raiseDispute",
+    values: [string]
+  ): string;
   encodeFunctionData(
     functionFragment: "relinquishTokensToOwner",
     values?: undefined
@@ -115,7 +122,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "sendChat",
-    values: [BigNumberish, string]
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "setAuctionDuration",
@@ -127,7 +134,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "setDeliveryAddress",
-    values: [BigNumberish, string]
+    values: [string, string]
   ): string;
   encodeFunctionData(functionFragment: "setPubKey", values: [string]): string;
   encodeFunctionData(
@@ -144,7 +151,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "transitionEscrowState",
-    values: [BigNumberish, BigNumberish]
+    values: [string, BigNumberish]
   ): string;
 
   decodeFunctionResult(
@@ -153,6 +160,10 @@ export interface AuctionInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "auctionItems",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "compareStrings",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -197,6 +208,10 @@ export interface AuctionInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "placeBid", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "pubKeys", data: BytesLike): Result;
   decodeFunctionResult(
+    functionFragment: "raiseDispute",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "relinquishTokensToOwner",
     data: BytesLike
   ): Result;
@@ -236,7 +251,7 @@ export interface AuctionInterface extends utils.Interface {
   ): Result;
 
   events: {
-    "AuctionItemCreated(uint256,string)": EventFragment;
+    "AuctionItemCreated(string,string)": EventFragment;
     "OwnershipTransferred(address,address)": EventFragment;
   };
 
@@ -245,8 +260,8 @@ export interface AuctionInterface extends utils.Interface {
 }
 
 export type AuctionItemCreatedEvent = TypedEvent<
-  [BigNumber, string],
-  { itemId: BigNumber; itemName: string }
+  [string, string],
+  { itemId: string; itemName: string }
 >;
 
 export type AuctionItemCreatedEventFilter =
@@ -296,11 +311,11 @@ export interface Auction extends BaseContract {
     >;
 
     auctionItems(
-      arg0: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [
-        BigNumber,
+        string,
         string,
         string,
         BigNumber,
@@ -311,7 +326,7 @@ export interface Auction extends BaseContract {
         string,
         number
       ] & {
-        itemId: BigNumber;
+        itemId: string;
         itemName: string;
         seller: string;
         reservePrice: BigNumber;
@@ -324,42 +339,39 @@ export interface Auction extends BaseContract {
       }
     >;
 
+    compareStrings(
+      a: string,
+      b: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     createAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       itemName: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     endAuction(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     getActiveAuctioneer(
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber[], boolean]>;
+    ): Promise<[BigNumber, string[], boolean]>;
 
     getAuctionDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<
-      [
-        BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        boolean
-      ]
+      [string, string, string, BigNumber, BigNumber, string, BigNumber, boolean]
     >;
 
     getChatLogOfItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<[string[]]>;
 
@@ -370,7 +382,7 @@ export interface Auction extends BaseContract {
     getCurrentTimestamp(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<[string]>;
 
@@ -381,12 +393,17 @@ export interface Auction extends BaseContract {
     owner(overrides?: CallOverrides): Promise<[string]>;
 
     placeBid(
-      itemId: BigNumberish,
+      itemId: string,
       bidAmount: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
 
     pubKeys(arg0: string, overrides?: CallOverrides): Promise<[string]>;
+
+    raiseDispute(
+      itemId: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
 
     relinquishTokensToOwner(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -397,7 +414,7 @@ export interface Auction extends BaseContract {
     ): Promise<ContractTransaction>;
 
     sendChat(
-      itemId: BigNumberish,
+      itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -413,7 +430,7 @@ export interface Auction extends BaseContract {
     ): Promise<ContractTransaction>;
 
     setDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       deliveryAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -439,7 +456,7 @@ export interface Auction extends BaseContract {
     ): Promise<ContractTransaction>;
 
     transitionEscrowState(
-      itemId: BigNumberish,
+      itemId: string,
       nextState: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -453,11 +470,11 @@ export interface Auction extends BaseContract {
   >;
 
   auctionItems(
-    arg0: BigNumberish,
+    arg0: string,
     overrides?: CallOverrides
   ): Promise<
     [
-      BigNumber,
+      string,
       string,
       string,
       BigNumber,
@@ -468,7 +485,7 @@ export interface Auction extends BaseContract {
       string,
       number
     ] & {
-      itemId: BigNumber;
+      itemId: string;
       itemName: string;
       seller: string;
       reservePrice: BigNumber;
@@ -481,42 +498,39 @@ export interface Auction extends BaseContract {
     }
   >;
 
+  compareStrings(
+    a: string,
+    b: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   createAuctionItem(
-    itemId: BigNumberish,
+    itemId: string,
     itemName: string,
     reservePrice: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   endAuction(
-    itemId: BigNumberish,
+    itemId: string,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   getActiveAuctioneer(
     overrides?: CallOverrides
-  ): Promise<[BigNumber, BigNumber[], boolean]>;
+  ): Promise<[BigNumber, string[], boolean]>;
 
   getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
   getAuctionItem(
-    itemId: BigNumberish,
+    itemId: string,
     overrides?: CallOverrides
   ): Promise<
-    [
-      BigNumber,
-      string,
-      string,
-      BigNumber,
-      BigNumber,
-      string,
-      BigNumber,
-      boolean
-    ]
+    [string, string, string, BigNumber, BigNumber, string, BigNumber, boolean]
   >;
 
   getChatLogOfItem(
-    itemId: BigNumberish,
+    itemId: string,
     overrides?: CallOverrides
   ): Promise<string[]>;
 
@@ -525,7 +539,7 @@ export interface Auction extends BaseContract {
   getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
   getDeliveryAddress(
-    itemId: BigNumberish,
+    itemId: string,
     overrides?: CallOverrides
   ): Promise<string>;
 
@@ -536,12 +550,17 @@ export interface Auction extends BaseContract {
   owner(overrides?: CallOverrides): Promise<string>;
 
   placeBid(
-    itemId: BigNumberish,
+    itemId: string,
     bidAmount: BigNumberish,
     overrides?: PayableOverrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
 
   pubKeys(arg0: string, overrides?: CallOverrides): Promise<string>;
+
+  raiseDispute(
+    itemId: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
 
   relinquishTokensToOwner(
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -552,7 +571,7 @@ export interface Auction extends BaseContract {
   ): Promise<ContractTransaction>;
 
   sendChat(
-    itemId: BigNumberish,
+    itemId: string,
     message: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -568,7 +587,7 @@ export interface Auction extends BaseContract {
   ): Promise<ContractTransaction>;
 
   setDeliveryAddress(
-    itemId: BigNumberish,
+    itemId: string,
     deliveryAddress: string,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -594,7 +613,7 @@ export interface Auction extends BaseContract {
   ): Promise<ContractTransaction>;
 
   transitionEscrowState(
-    itemId: BigNumberish,
+    itemId: string,
     nextState: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -608,11 +627,11 @@ export interface Auction extends BaseContract {
     >;
 
     auctionItems(
-      arg0: BigNumberish,
+      arg0: string,
       overrides?: CallOverrides
     ): Promise<
       [
-        BigNumber,
+        string,
         string,
         string,
         BigNumber,
@@ -623,7 +642,7 @@ export interface Auction extends BaseContract {
         string,
         number
       ] & {
-        itemId: BigNumber;
+        itemId: string;
         itemName: string;
         seller: string;
         reservePrice: BigNumber;
@@ -636,39 +655,36 @@ export interface Auction extends BaseContract {
       }
     >;
 
+    compareStrings(
+      a: string,
+      b: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     createAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       itemName: string,
       reservePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
-    endAuction(itemId: BigNumberish, overrides?: CallOverrides): Promise<void>;
+    endAuction(itemId: string, overrides?: CallOverrides): Promise<void>;
 
     getActiveAuctioneer(
       overrides?: CallOverrides
-    ): Promise<[BigNumber, BigNumber[], boolean]>;
+    ): Promise<[BigNumber, string[], boolean]>;
 
     getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<
-      [
-        BigNumber,
-        string,
-        string,
-        BigNumber,
-        BigNumber,
-        string,
-        BigNumber,
-        boolean
-      ]
+      [string, string, string, BigNumber, BigNumber, string, BigNumber, boolean]
     >;
 
     getChatLogOfItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<string[]>;
 
@@ -677,7 +693,7 @@ export interface Auction extends BaseContract {
     getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     getDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<string>;
 
@@ -688,19 +704,21 @@ export interface Auction extends BaseContract {
     owner(overrides?: CallOverrides): Promise<string>;
 
     placeBid(
-      itemId: BigNumberish,
+      itemId: string,
       bidAmount: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
 
     pubKeys(arg0: string, overrides?: CallOverrides): Promise<string>;
 
+    raiseDispute(itemId: string, overrides?: CallOverrides): Promise<void>;
+
     relinquishTokensToOwner(overrides?: CallOverrides): Promise<void>;
 
     renounceOwnership(overrides?: CallOverrides): Promise<void>;
 
     sendChat(
-      itemId: BigNumberish,
+      itemId: string,
       message: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -716,7 +734,7 @@ export interface Auction extends BaseContract {
     ): Promise<void>;
 
     setDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       deliveryAddress: string,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -736,19 +754,19 @@ export interface Auction extends BaseContract {
     ): Promise<void>;
 
     transitionEscrowState(
-      itemId: BigNumberish,
+      itemId: string,
       nextState: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
   };
 
   filters: {
-    "AuctionItemCreated(uint256,string)"(
-      itemId?: BigNumberish | null,
+    "AuctionItemCreated(string,string)"(
+      itemId?: string | null,
       itemName?: null
     ): AuctionItemCreatedEventFilter;
     AuctionItemCreated(
-      itemId?: BigNumberish | null,
+      itemId?: string | null,
       itemName?: null
     ): AuctionItemCreatedEventFilter;
 
@@ -768,20 +786,23 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    auctionItems(
-      arg0: BigNumberish,
+    auctionItems(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    compareStrings(
+      a: string,
+      b: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     createAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       itemName: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     endAuction(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
@@ -790,12 +811,12 @@ export interface Auction extends BaseContract {
     getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
     getChatLogOfItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -804,7 +825,7 @@ export interface Auction extends BaseContract {
     getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
 
     getDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
@@ -815,12 +836,17 @@ export interface Auction extends BaseContract {
     owner(overrides?: CallOverrides): Promise<BigNumber>;
 
     placeBid(
-      itemId: BigNumberish,
+      itemId: string,
       bidAmount: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
     pubKeys(arg0: string, overrides?: CallOverrides): Promise<BigNumber>;
+
+    raiseDispute(
+      itemId: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
 
     relinquishTokensToOwner(
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -831,7 +857,7 @@ export interface Auction extends BaseContract {
     ): Promise<BigNumber>;
 
     sendChat(
-      itemId: BigNumberish,
+      itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -847,7 +873,7 @@ export interface Auction extends BaseContract {
     ): Promise<BigNumber>;
 
     setDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       deliveryAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -873,7 +899,7 @@ export interface Auction extends BaseContract {
     ): Promise<BigNumber>;
 
     transitionEscrowState(
-      itemId: BigNumberish,
+      itemId: string,
       nextState: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -886,19 +912,25 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     auctionItems(
-      arg0: BigNumberish,
+      arg0: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    compareStrings(
+      a: string,
+      b: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     createAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       itemName: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     endAuction(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
@@ -911,12 +943,12 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getAuctionItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
     getChatLogOfItem(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -929,7 +961,7 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
@@ -943,7 +975,7 @@ export interface Auction extends BaseContract {
     owner(overrides?: CallOverrides): Promise<PopulatedTransaction>;
 
     placeBid(
-      itemId: BigNumberish,
+      itemId: string,
       bidAmount: BigNumberish,
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -951,6 +983,11 @@ export interface Auction extends BaseContract {
     pubKeys(
       arg0: string,
       overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    raiseDispute(
+      itemId: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
 
     relinquishTokensToOwner(
@@ -962,7 +999,7 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     sendChat(
-      itemId: BigNumberish,
+      itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -978,7 +1015,7 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     setDeliveryAddress(
-      itemId: BigNumberish,
+      itemId: string,
       deliveryAddress: string,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
@@ -1004,7 +1041,7 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     transitionEscrowState(
-      itemId: BigNumberish,
+      itemId: string,
       nextState: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;
