@@ -14,7 +14,8 @@ contract Auction is Ownable {
         ItemOnDelivery, // Seller sent item on delivery
         ItemReceived, // Buyer received the item
         Dispute, // There is a dispute,
-        DisputeResolved // Dispute has been resolved
+        DisputeResolved, // Dispute has been resolved
+        Cancelled // Auction has been cancelled due to dispute
     }
 
     // structs
@@ -32,6 +33,8 @@ contract Auction is Ownable {
         string[] privateChatLogs; // Chat log between winner and owner
         string[] committeeChatLogs; // In case of dispute, discussion will be held here
         EscrowState escrowState;
+        uint8 yesVotes; // Vote of committee members in favor of finalizing auction
+        uint8 noVotes; // Vote of committee member in favor of canceling auction
     }
 
     struct ActiveAuctioneer {
@@ -44,6 +47,7 @@ contract Auction is Ownable {
     mapping(string => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
     mapping (address => string) public pubKeys;
+    mapping(address => bool) public isCommitteeMember;
     uint256 tokensToStake = 500;
     ObscurityToken token;
 
@@ -97,8 +101,21 @@ contract Auction is Ownable {
         _;
     }
 
+     modifier onlyCommitteeMember() {
+        require(isCommitteeMember[msg.sender], "You are not an authorized committee member");
+        _;
+    }
+
+    modifier hasDispute(string calldata itemId){
+        require(auctionItems[itemId].escrowState == EscrowState.Dispute, "This auction doesn't have a dispute");
+        _;
+    }
+
     constructor(ObscurityToken _token) {
         token = _token;
+        isCommitteeMember[0x90F79bf6EB2c4f870365E785982E1f101E93b906] = true;
+        isCommitteeMember[0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65] = true;
+        isCommitteeMember[0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc] = true;
     }
 
 
@@ -162,7 +179,9 @@ contract Auction is Ownable {
             deliveryAddress: "",
             privateChatLogs: init,
             committeeChatLogs: init,
-            escrowState: EscrowState.AwaitingDeliveryAddress
+            escrowState: EscrowState.AwaitingDeliveryAddress,
+            yesVotes: 0,
+            noVotes: 0
         });
 
         activeAuctionOwners[msg.sender].activeAuctions.push(itemId);
@@ -323,20 +342,21 @@ contract Auction is Ownable {
         EscrowState nextState
     ) external itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
+        require(item.ended, "Auction has not ended yet");
         require(item.escrowState != EscrowState.Dispute, "Cant resume escrow processes without dispute resolution");
         require(
             (msg.sender == item.seller &&
                 nextState == EscrowState.PreparingItem &&
-                item.escrowState == EscrowState.AwaitingDeliveryAddress) ||
+                (item.escrowState == EscrowState.AwaitingDeliveryAddress || item.escrowState == EscrowState.DisputeResolved)) ||
                 (msg.sender == item.seller &&
                     nextState == EscrowState.ItemOnDelivery &&
-                    item.escrowState == EscrowState.PreparingItem) ||
+                    (item.escrowState == EscrowState.PreparingItem || item.escrowState == EscrowState.DisputeResolved)) ||
                 (msg.sender == item.highestBidder &&
                     nextState == EscrowState.ItemReceived &&
-                    item.escrowState == EscrowState.ItemOnDelivery) ||
+                    (item.escrowState == EscrowState.ItemOnDelivery || item.escrowState == EscrowState.DisputeResolved)) ||
                 (msg.sender == item.highestBidder &&
                     nextState == EscrowState.ItemReceived &&
-                    item.escrowState == EscrowState.ItemOnDelivery),
+                    (item.escrowState == EscrowState.ItemOnDelivery || item.escrowState == EscrowState.DisputeResolved)),
             "Invalid state transition"
         );
 
@@ -352,6 +372,26 @@ contract Auction is Ownable {
         AuctionItem storage item = auctionItems[itemId];
         require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
         item.escrowState = EscrowState.Dispute;
+    }
+
+    function voteOnDispute(string calldata itemId, uint8 vote) external itemExists(itemId) onlyCommitteeMember hasDispute(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+        if(vote == 1){
+            item.yesVotes++;
+        } else {
+            item.noVotes++;
+        }
+    }
+
+    function resolveDispute(string calldata itemId) external payable itemExists(itemId) hasDispute(itemId) onlyCommitteeMember {
+        AuctionItem storage item = auctionItems[itemId];
+        if(item.yesVotes >= item.noVotes){
+            token.transfer(item.seller, item.highestBid);
+            item.escrowState = EscrowState.DisputeResolved;
+        } else {
+            token.transfer(item.highestBidder, item.highestBid);
+            item.escrowState = EscrowState.Cancelled;
+        }
     }
 
     // Utils
