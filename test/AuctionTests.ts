@@ -3,6 +3,7 @@ import { assert, expect } from "chai";
 import { Auction, ObscurityToken } from "../typechain-types";
 import "@nomicfoundation/hardhat-chai-matchers";
 import { increase } from "@nomicfoundation/hardhat-network-helpers/dist/src/helpers/time";
+import * as sigUtils from "@metamask/eth-sig-util";
 
 describe("Auction Tests", async () => {
     let auctionContract: Auction;
@@ -14,6 +15,26 @@ describe("Auction Tests", async () => {
         auctionContract = await ethers.getContract("Auction");
         obscurityToken = await ethers.getContract("ObscurityToken");
         [deployer, seller, buyer] = await ethers.getSigners();
+
+        await auctionContract.setPubKey(
+            sigUtils.getEncryptionPublicKey(
+                "0xac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80"
+            )
+        );
+        await auctionContract
+            .connect(seller)
+            .setPubKey(
+                sigUtils.getEncryptionPublicKey(
+                    "0x59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d"
+                )
+            );
+        await auctionContract
+            .connect(buyer)
+            .setPubKey(
+                sigUtils.getEncryptionPublicKey(
+                    "0x5de4111afa1a4b94908f83103eb1f1706367c2e68ca870fc3fb9a804cdab365a"
+                )
+            );
     });
 
     it("Fails to create an auction before staking the required amount", async () => {

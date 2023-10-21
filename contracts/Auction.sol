@@ -29,6 +29,7 @@ contract Auction is Ownable {
         uint256 auctionEndTime; // Unix timestamp when the auction ends
         bool ended; // Flag to indicate if the auction has ended
         string deliveryAddress; // Delivery address of the winner, will be set by winner after auction ends
+        string[] chatLogs; // Chat log between winner and owner
         EscrowState escrowState;
     }
 
@@ -41,7 +42,7 @@ contract Auction is Ownable {
     // fields
     mapping(uint256 => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
-    mapping(uint256 => bool) public disputeResolved;
+    mapping (address => string) public pubKeys;
     uint256 tokensToStake = 500;
     ObscurityToken token;
 
@@ -82,10 +83,6 @@ contract Auction is Ownable {
         _;
     }
 
-    constructor(ObscurityToken _token) {
-        token = _token;
-    }
-
     modifier isWinner(uint256 itemId) {
         require(
             (msg.sender == auctionItems[itemId].highestBidder) && (auctionItems[itemId].ended),
@@ -93,6 +90,16 @@ contract Auction is Ownable {
         );
         _;
     }
+
+    modifier hasPubKey() {
+        require(bytes(pubKeys[msg.sender]).length == 44, "Please submit your eth wallet pubkey before using the system");
+        _;
+    }
+
+    constructor(ObscurityToken _token) {
+        token = _token;
+    }
+
 
     // Functions to be called by DAO
     function setAuctionDuration(uint256 duration) external onlyOwner {
@@ -135,12 +142,12 @@ contract Auction is Ownable {
         uint256 itemId,
         string memory itemName,
         uint256 reservePrice
-    ) external stakedCoinRequired belowAuctionCount {
+    ) external stakedCoinRequired belowAuctionCount hasPubKey{
         require(auctionItems[itemId].itemId == 0, "Item already exists");
         require(reservePrice > 0, "Reserve price must be greater than zero");
 
         uint256 auctionEndTime = block.timestamp + auctionDuration;
-
+        string[] memory init;
         auctionItems[itemId] = AuctionItem({
             itemId: itemId,
             itemName: itemName,
@@ -151,6 +158,7 @@ contract Auction is Ownable {
             auctionEndTime: auctionEndTime,
             ended: false,
             deliveryAddress: "",
+            chatLogs: init,
             escrowState: EscrowState.AwaitingDeliveryAddress
         });
 
@@ -158,44 +166,9 @@ contract Auction is Ownable {
         emit AuctionItemCreated(itemId, itemName);
     }
 
-    function setDeliveryAddress(
-        uint256 itemId,
-        string memory deliveryAddress
-    ) external itemExists(itemId) isWinner(itemId) {
-        AuctionItem storage item = auctionItems[itemId];
-        item.deliveryAddress = deliveryAddress;
-    }
-
-    function transitionEscrowState(
-        uint256 itemId,
-        EscrowState nextState
-    ) external itemExists(itemId) {
-        AuctionItem storage item = auctionItems[itemId];
-
-        require(
-            (msg.sender == item.seller &&
-                nextState == EscrowState.PreparingItem &&
-                item.escrowState == EscrowState.AwaitingDeliveryAddress) ||
-                (msg.sender == item.seller &&
-                    nextState == EscrowState.ItemOnDelivery &&
-                    item.escrowState == EscrowState.PreparingItem) ||
-                (msg.sender == item.highestBidder &&
-                    nextState == EscrowState.ItemReceived &&
-                    item.escrowState == EscrowState.ItemOnDelivery) ||
-                (msg.sender == item.highestBidder &&
-                    nextState == EscrowState.ItemReceived &&
-                    item.escrowState == EscrowState.ItemOnDelivery),
-            "Invalid state transition"
-        );
-
-        item.escrowState = nextState;
-        if (nextState == EscrowState.ItemReceived) {
-            token.transfer(item.seller, item.highestBid);
-        }
-    }
 
     // Function to place a bid
-    function placeBid(uint256 itemId, uint256 bidAmount) external payable itemExists(itemId) {
+    function placeBid(uint256 itemId, uint256 bidAmount) external payable itemExists(itemId) hasPubKey{
         AuctionItem storage item = auctionItems[itemId];
 
         require(item.seller != msg.sender, "Owner can't bid on their auctions");
@@ -222,11 +195,6 @@ contract Auction is Ownable {
         }
     }
 
-    // Function to get the current block timestamp
-    function getCurrentTimestamp() external view returns (uint256) {
-        return block.timestamp;
-    }
-
     // Function to end an auction and finalize the highest bidder
     function endAuction(uint256 itemId) external payable itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
@@ -250,6 +218,12 @@ contract Auction is Ownable {
         if (item.highestBid == 0) {
             return;
         }
+    }
+
+    function sendChat(uint256 itemId, string calldata message) external itemExists(itemId){
+        AuctionItem storage item = auctionItems[itemId];
+        require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
+        item.chatLogs.push(message);
     }
 
     // GETTERS
@@ -307,5 +281,67 @@ contract Auction is Ownable {
 
     function getAuctionDuration() external view returns (uint256) {
         return auctionDuration;
+    }
+
+    // Function to get the current block timestamp
+    function getCurrentTimestamp() external view returns (uint256) {
+        return block.timestamp;
+    }
+
+    function getChatLogOfItem(uint256 itemId) external view itemExists(itemId) returns (string[] memory){
+        AuctionItem storage item = auctionItems[itemId];
+        require((item.highestBidder ==  msg.sender || msg.sender == item.seller) && item.ended, "Auction has not ended yet, or you are not the winner or owner of the item");
+
+        return item.chatLogs;
+    }
+
+    function getPubKey(address adr) external view returns (string memory){
+        return pubKeys[adr];
+    }
+
+    // SETTERS
+
+    function setDeliveryAddress(
+        uint256 itemId,
+        string memory deliveryAddress
+    ) external itemExists(itemId) isWinner(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+        item.deliveryAddress = deliveryAddress;
+    }
+
+    function setPubKey(string calldata pubKey) external {
+        pubKeys[msg.sender] = pubKey;
+    }
+
+    // Escrow Functions
+
+    function transitionEscrowState(
+        uint256 itemId,
+        EscrowState nextState
+    ) external itemExists(itemId) {
+        AuctionItem storage item = auctionItems[itemId];
+
+        require(
+            (msg.sender == item.seller &&
+                nextState == EscrowState.PreparingItem &&
+                item.escrowState == EscrowState.AwaitingDeliveryAddress) ||
+                (msg.sender == item.seller &&
+                    nextState == EscrowState.ItemOnDelivery &&
+                    item.escrowState == EscrowState.PreparingItem) ||
+                (msg.sender == item.highestBidder &&
+                    nextState == EscrowState.ItemReceived &&
+                    item.escrowState == EscrowState.ItemOnDelivery) ||
+                (msg.sender == item.highestBidder &&
+                    nextState == EscrowState.ItemReceived &&
+                    item.escrowState == EscrowState.ItemOnDelivery),
+            "Invalid state transition"
+        );
+
+        require(bytes(item.deliveryAddress).length > 0, "Please set a delivery address first");
+
+        item.escrowState = nextState;
+        if (nextState == EscrowState.ItemReceived) {
+            token.transfer(item.seller, item.highestBid);
+        }
     }
 }
