@@ -155,4 +155,13 @@ describe("Auction Tests", async () => {
             500
         );
     });
+    it("Successfully fetches all auctions", async () => {
+        await obscurityToken.transfer(buyer.address, 1500);
+        await obscurityToken.approve(auctionContract.address, 500);
+        await auctionContract.stakeTokens(500);
+        await auctionContract.createAuctionItem("test", "testItem", 1000);
+        await auctionContract.createAuctionItem("test2", "testItem2", 1000);
+        let auctions = await auctionContract.getAllAuctions();
+        expect(auctions).to.be.length(2);
+    });
 });

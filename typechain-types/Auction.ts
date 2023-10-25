@@ -18,6 +18,57 @@ import { FunctionFragment, Result, EventFragment } from "@ethersproject/abi";
 import { Listener, Provider } from "@ethersproject/providers";
 import { TypedEventFilter, TypedEvent, TypedListener, OnEvent } from "./common";
 
+export declare namespace Auction {
+  export type AuctionItemStruct = {
+    itemId: string;
+    itemName: string;
+    seller: string;
+    reservePrice: BigNumberish;
+    highestBid: BigNumberish;
+    highestBidder: string;
+    auctionEndTime: BigNumberish;
+    ended: boolean;
+    deliveryAddress: string;
+    privateChatLogs: string[];
+    committeeChatLogs: string[];
+    escrowState: BigNumberish;
+    yesVotes: BigNumberish;
+    noVotes: BigNumberish;
+  };
+
+  export type AuctionItemStructOutput = [
+    string,
+    string,
+    string,
+    BigNumber,
+    BigNumber,
+    string,
+    BigNumber,
+    boolean,
+    string,
+    string[],
+    string[],
+    number,
+    number,
+    number
+  ] & {
+    itemId: string;
+    itemName: string;
+    seller: string;
+    reservePrice: BigNumber;
+    highestBid: BigNumber;
+    highestBidder: string;
+    auctionEndTime: BigNumber;
+    ended: boolean;
+    deliveryAddress: string;
+    privateChatLogs: string[];
+    committeeChatLogs: string[];
+    escrowState: number;
+    yesVotes: number;
+    noVotes: number;
+  };
+}
+
 export interface AuctionInterface extends utils.Interface {
   contractName: "Auction";
   functions: {
@@ -27,6 +78,8 @@ export interface AuctionInterface extends utils.Interface {
     "createAuctionItem(string,string,uint256)": FunctionFragment;
     "endAuction(string)": FunctionFragment;
     "getActiveAuctioneer()": FunctionFragment;
+    "getAllAuctions()": FunctionFragment;
+    "getAllDisputeAuctions()": FunctionFragment;
     "getAuctionDuration()": FunctionFragment;
     "getAuctionItem(string)": FunctionFragment;
     "getChatLogOfItem(string)": FunctionFragment;
@@ -44,6 +97,7 @@ export interface AuctionInterface extends utils.Interface {
     "renounceOwnership()": FunctionFragment;
     "resolveDispute(string)": FunctionFragment;
     "sendChat(string,string)": FunctionFragment;
+    "sendCommitteeChat(string,string)": FunctionFragment;
     "setAuctionDuration(uint64)": FunctionFragment;
     "setConcurrentAuctionsPerUser(uint8)": FunctionFragment;
     "setDeliveryAddress(string,string)": FunctionFragment;
@@ -74,6 +128,14 @@ export interface AuctionInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "endAuction", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getActiveAuctioneer",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllAuctions",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getAllDisputeAuctions",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -136,6 +198,10 @@ export interface AuctionInterface extends utils.Interface {
     values: [string, string]
   ): string;
   encodeFunctionData(
+    functionFragment: "sendCommitteeChat",
+    values: [string, string]
+  ): string;
+  encodeFunctionData(
     functionFragment: "setAuctionDuration",
     values: [BigNumberish]
   ): string;
@@ -191,6 +257,14 @@ export interface AuctionInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(
+    functionFragment: "getAllAuctions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getAllDisputeAuctions",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
     functionFragment: "getAuctionDuration",
     data: BytesLike
   ): Result;
@@ -243,6 +317,10 @@ export interface AuctionInterface extends utils.Interface {
     data: BytesLike
   ): Result;
   decodeFunctionResult(functionFragment: "sendChat", data: BytesLike): Result;
+  decodeFunctionResult(
+    functionFragment: "sendCommitteeChat",
+    data: BytesLike
+  ): Result;
   decodeFunctionResult(
     functionFragment: "setAuctionDuration",
     data: BytesLike
@@ -392,6 +470,14 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, string[], boolean]>;
 
+    getAllAuctions(
+      overrides?: CallOverrides
+    ): Promise<[Auction.AuctionItemStructOutput[]]>;
+
+    getAllDisputeAuctions(
+      overrides?: CallOverrides
+    ): Promise<[Auction.AuctionItemStructOutput[]]>;
+
     getAuctionDuration(overrides?: CallOverrides): Promise<[BigNumber]>;
 
     getAuctionItem(
@@ -455,6 +541,12 @@ export interface Auction extends BaseContract {
     ): Promise<ContractTransaction>;
 
     sendChat(
+      itemId: string,
+      message: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<ContractTransaction>;
+
+    sendCommitteeChat(
       itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -571,6 +663,14 @@ export interface Auction extends BaseContract {
     overrides?: CallOverrides
   ): Promise<[BigNumber, string[], boolean]>;
 
+  getAllAuctions(
+    overrides?: CallOverrides
+  ): Promise<Auction.AuctionItemStructOutput[]>;
+
+  getAllDisputeAuctions(
+    overrides?: CallOverrides
+  ): Promise<Auction.AuctionItemStructOutput[]>;
+
   getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
   getAuctionItem(
@@ -629,6 +729,12 @@ export interface Auction extends BaseContract {
   ): Promise<ContractTransaction>;
 
   sendChat(
+    itemId: string,
+    message: string,
+    overrides?: Overrides & { from?: string | Promise<string> }
+  ): Promise<ContractTransaction>;
+
+  sendCommitteeChat(
     itemId: string,
     message: string,
     overrides?: Overrides & { from?: string | Promise<string> }
@@ -742,6 +848,14 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[BigNumber, string[], boolean]>;
 
+    getAllAuctions(
+      overrides?: CallOverrides
+    ): Promise<Auction.AuctionItemStructOutput[]>;
+
+    getAllDisputeAuctions(
+      overrides?: CallOverrides
+    ): Promise<Auction.AuctionItemStructOutput[]>;
+
     getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAuctionItem(
@@ -793,6 +907,12 @@ export interface Auction extends BaseContract {
     resolveDispute(itemId: string, overrides?: CallOverrides): Promise<void>;
 
     sendChat(
+      itemId: string,
+      message: string,
+      overrides?: CallOverrides
+    ): Promise<void>;
+
+    sendCommitteeChat(
       itemId: string,
       message: string,
       overrides?: CallOverrides
@@ -889,6 +1009,10 @@ export interface Auction extends BaseContract {
 
     getActiveAuctioneer(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getAllAuctions(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getAllDisputeAuctions(overrides?: CallOverrides): Promise<BigNumber>;
+
     getAuctionDuration(overrides?: CallOverrides): Promise<BigNumber>;
 
     getAuctionItem(
@@ -948,6 +1072,12 @@ export interface Auction extends BaseContract {
     ): Promise<BigNumber>;
 
     sendChat(
+      itemId: string,
+      message: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<BigNumber>;
+
+    sendCommitteeChat(
       itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
@@ -1035,6 +1165,12 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
+    getAllAuctions(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getAllDisputeAuctions(
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
     getAuctionDuration(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
@@ -1106,6 +1242,12 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     sendChat(
+      itemId: string,
+      message: string,
+      overrides?: Overrides & { from?: string | Promise<string> }
+    ): Promise<PopulatedTransaction>;
+
+    sendCommitteeChat(
       itemId: string,
       message: string,
       overrides?: Overrides & { from?: string | Promise<string> }
