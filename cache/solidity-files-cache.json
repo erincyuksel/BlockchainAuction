@@ -2,15 +2,16 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "D:\\Projects\\BlockchainAuction\\contracts\\Auction.sol": {
-      "lastModificationDate": 1698231059984,
-      "contentHash": "f0c9abd4837202f23beeaeaa81108b71",
+      "lastModificationDate": 1698843094639,
+      "contentHash": "2c6d0cd3bae2e6e39c636fb5918c036d",
       "sourceName": "contracts/Auction.sol",
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -53,9 +54,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -97,9 +99,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -141,9 +144,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -189,9 +193,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -234,9 +239,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -276,9 +282,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -320,9 +327,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -362,9 +370,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -410,9 +419,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -452,9 +462,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -494,9 +505,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -539,9 +551,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -581,9 +594,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -627,9 +641,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -669,9 +684,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -715,9 +731,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -757,9 +774,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -801,9 +819,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -843,9 +862,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -885,9 +905,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -927,9 +948,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -969,9 +991,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1013,9 +1036,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1058,9 +1082,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1102,9 +1127,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1155,9 +1181,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1197,9 +1224,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1239,9 +1267,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1283,9 +1312,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1327,9 +1357,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1372,9 +1403,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1414,9 +1446,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1456,9 +1489,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1500,9 +1534,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1550,9 +1585,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1595,9 +1631,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1639,9 +1676,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1685,9 +1723,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1731,9 +1770,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1777,9 +1817,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1821,9 +1862,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1868,9 +1910,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {
@@ -1910,9 +1953,10 @@
       "solcConfig": {
         "version": "0.8.19",
         "settings": {
+          "viaIR": true,
           "optimizer": {
             "enabled": true,
-            "runs": 200
+            "runs": 300
           },
           "outputSelection": {
             "*": {

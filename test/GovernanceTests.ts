@@ -82,9 +82,15 @@ describe("Governor Voting Tests", async () => {
 
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await expect(auction.createAuctionItem("test", "testItem", 1000)).to.be.revertedWith(
-            "Not enough tokens staked to create an auction"
-        );
+        await expect(
+            auction.createAuctionItem(
+                "test",
+                "testItem",
+                "testDescription",
+                new Uint8Array(32),
+                1000
+            )
+        ).to.be.revertedWith("Not enough tokens staked to create an auction");
     });
 
     it("Concurrent active auctions is changed after voting process", async () => {
@@ -123,14 +129,38 @@ describe("Governor Voting Tests", async () => {
 
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await auction.createAuctionItem("test1", "testItem1", 1000);
-        await auction.createAuctionItem("test2", "testItem2", 1000);
-        await auction.createAuctionItem("test3", "testItem3", 1000);
+        await auction.createAuctionItem(
+            "test1",
+            "testItem1",
+            "testDescription1",
+            new Uint8Array(32),
+            1000
+        );
+        await auction.createAuctionItem(
+            "test2",
+            "testItem2",
+            "testDescription2",
+            new Uint8Array(32),
+            1000
+        );
+        await auction.createAuctionItem(
+            "test3",
+            "testItem3",
+            "testDescription3",
+            new Uint8Array(32),
+            1000
+        );
 
         // 4th one should fail
-        await expect(auction.createAuctionItem("test4", "testItem4", 1000)).to.be.revertedWith(
-            "You can't have any more active auctions"
-        );
+        await expect(
+            auction.createAuctionItem(
+                "test4",
+                "testItem4",
+                "testDescription4",
+                new Uint8Array(32),
+                1000
+            )
+        ).to.be.revertedWith("You can't have any more active auctions");
     });
 
     it("Auction duration is changed after voting process", async () => {
@@ -167,7 +197,13 @@ describe("Governor Voting Tests", async () => {
         // try to create 3 ongoing auctions
         await obscurityToken.approve(auction.address, 500);
         await auction.stakeTokens(500);
-        await auction.createAuctionItem("test", "testItem", 1000);
+        await auction.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            new Uint8Array(32),
+            1000
+        );
         await increase(60 * 60 * 48 - 3600);
         await expect(auction.endAuction("test")).to.be.revertedWith("Auction has not yet ended");
     });

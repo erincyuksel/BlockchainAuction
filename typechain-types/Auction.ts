@@ -22,6 +22,8 @@ export declare namespace Auction {
   export type AuctionItemStruct = {
     itemId: string;
     itemName: string;
+    itemDescription: string;
+    hashOfImage: BytesLike;
     seller: string;
     reservePrice: BigNumberish;
     highestBid: BigNumberish;
@@ -40,6 +42,8 @@ export declare namespace Auction {
     string,
     string,
     string,
+    string,
+    string,
     BigNumber,
     BigNumber,
     string,
@@ -54,6 +58,8 @@ export declare namespace Auction {
   ] & {
     itemId: string;
     itemName: string;
+    itemDescription: string;
+    hashOfImage: string;
     seller: string;
     reservePrice: BigNumber;
     highestBid: BigNumber;
@@ -75,7 +81,7 @@ export interface AuctionInterface extends utils.Interface {
     "activeAuctionOwners(address)": FunctionFragment;
     "auctionItems(string)": FunctionFragment;
     "compareStrings(string,string)": FunctionFragment;
-    "createAuctionItem(string,string,uint256)": FunctionFragment;
+    "createAuctionItem(string,string,string,bytes32,uint256)": FunctionFragment;
     "endAuction(string)": FunctionFragment;
     "getActiveAuctioneer()": FunctionFragment;
     "getAllAuctions()": FunctionFragment;
@@ -123,7 +129,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createAuctionItem",
-    values: [string, string, BigNumberish]
+    values: [string, string, string, BytesLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "endAuction", values: [string]): string;
   encodeFunctionData(
@@ -423,6 +429,8 @@ export interface Auction extends BaseContract {
         string,
         string,
         string,
+        string,
+        string,
         BigNumber,
         BigNumber,
         string,
@@ -435,6 +443,8 @@ export interface Auction extends BaseContract {
       ] & {
         itemId: string;
         itemName: string;
+        itemDescription: string;
+        hashOfImage: string;
         seller: string;
         reservePrice: BigNumber;
         highestBid: BigNumber;
@@ -457,6 +467,8 @@ export interface Auction extends BaseContract {
     createAuctionItem(
       itemId: string,
       itemName: string,
+      itemDescription: string,
+      hashOfImage: BytesLike,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -616,6 +628,8 @@ export interface Auction extends BaseContract {
       string,
       string,
       string,
+      string,
+      string,
       BigNumber,
       BigNumber,
       string,
@@ -628,6 +642,8 @@ export interface Auction extends BaseContract {
     ] & {
       itemId: string;
       itemName: string;
+      itemDescription: string;
+      hashOfImage: string;
       seller: string;
       reservePrice: BigNumber;
       highestBid: BigNumber;
@@ -650,6 +666,8 @@ export interface Auction extends BaseContract {
   createAuctionItem(
     itemId: string,
     itemName: string,
+    itemDescription: string,
+    hashOfImage: BytesLike,
     reservePrice: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -804,6 +822,8 @@ export interface Auction extends BaseContract {
         string,
         string,
         string,
+        string,
+        string,
         BigNumber,
         BigNumber,
         string,
@@ -816,6 +836,8 @@ export interface Auction extends BaseContract {
       ] & {
         itemId: string;
         itemName: string;
+        itemDescription: string;
+        hashOfImage: string;
         seller: string;
         reservePrice: BigNumber;
         highestBid: BigNumber;
@@ -838,6 +860,8 @@ export interface Auction extends BaseContract {
     createAuctionItem(
       itemId: string,
       itemName: string,
+      itemDescription: string,
+      hashOfImage: BytesLike,
       reservePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -998,6 +1022,8 @@ export interface Auction extends BaseContract {
     createAuctionItem(
       itemId: string,
       itemName: string,
+      itemDescription: string,
+      hashOfImage: BytesLike,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1152,6 +1178,8 @@ export interface Auction extends BaseContract {
     createAuctionItem(
       itemId: string,
       itemName: string,
+      itemDescription: string,
+      hashOfImage: BytesLike,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

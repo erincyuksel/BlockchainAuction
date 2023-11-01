@@ -27,7 +27,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -49,7 +51,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -75,7 +79,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -97,7 +103,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -119,7 +127,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -145,7 +155,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -170,7 +182,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -191,7 +205,9 @@ describe("Escrow Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await auctionContract.connect(seller).stakeTokens(500);
-        await auctionContract.connect(seller).createAuctionItem("test", "testItem", 1000);
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
