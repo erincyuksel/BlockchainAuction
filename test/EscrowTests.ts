@@ -29,7 +29,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -53,7 +53,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -81,7 +81,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -105,7 +105,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -129,7 +129,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -157,7 +157,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -184,7 +184,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
@@ -207,7 +207,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
 
         await obscurityToken.transfer(buyer.address, 1001);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);

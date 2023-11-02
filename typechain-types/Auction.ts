@@ -23,7 +23,7 @@ export declare namespace Auction {
     itemId: string;
     itemName: string;
     itemDescription: string;
-    hashOfImage: BytesLike;
+    hashOfImage: string;
     seller: string;
     reservePrice: BigNumberish;
     highestBid: BigNumberish;
@@ -81,7 +81,7 @@ export interface AuctionInterface extends utils.Interface {
     "activeAuctionOwners(address)": FunctionFragment;
     "auctionItems(string)": FunctionFragment;
     "compareStrings(string,string)": FunctionFragment;
-    "createAuctionItem(string,string,string,bytes32,uint256)": FunctionFragment;
+    "createAuctionItem(string,string,string,string,uint256)": FunctionFragment;
     "endAuction(string)": FunctionFragment;
     "getActiveAuctioneer()": FunctionFragment;
     "getAllAuctions()": FunctionFragment;
@@ -129,7 +129,7 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "createAuctionItem",
-    values: [string, string, string, BytesLike, BigNumberish]
+    values: [string, string, string, string, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "endAuction", values: [string]): string;
   encodeFunctionData(
@@ -468,7 +468,7 @@ export interface Auction extends BaseContract {
       itemId: string,
       itemName: string,
       itemDescription: string,
-      hashOfImage: BytesLike,
+      hashOfImage: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<ContractTransaction>;
@@ -667,7 +667,7 @@ export interface Auction extends BaseContract {
     itemId: string,
     itemName: string,
     itemDescription: string,
-    hashOfImage: BytesLike,
+    hashOfImage: string,
     reservePrice: BigNumberish,
     overrides?: Overrides & { from?: string | Promise<string> }
   ): Promise<ContractTransaction>;
@@ -861,7 +861,7 @@ export interface Auction extends BaseContract {
       itemId: string,
       itemName: string,
       itemDescription: string,
-      hashOfImage: BytesLike,
+      hashOfImage: string,
       reservePrice: BigNumberish,
       overrides?: CallOverrides
     ): Promise<void>;
@@ -1023,7 +1023,7 @@ export interface Auction extends BaseContract {
       itemId: string,
       itemName: string,
       itemDescription: string,
-      hashOfImage: BytesLike,
+      hashOfImage: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
@@ -1179,7 +1179,7 @@ export interface Auction extends BaseContract {
       itemId: string,
       itemName: string,
       itemDescription: string,
-      hashOfImage: BytesLike,
+      hashOfImage: string,
       reservePrice: BigNumberish,
       overrides?: Overrides & { from?: string | Promise<string> }
     ): Promise<PopulatedTransaction>;

@@ -24,7 +24,7 @@ contract Auction is Ownable {
         string itemId; // Unique identifier for the item
         string itemName; // Name or description of the item
         string itemDescription; // Description of the item
-        bytes32 hashOfImage; // Hash of the uploaded image to verify its authenticity
+        string hashOfImage; // Hash of the uploaded image to verify its authenticity
         address payable seller; // Address of the seller
         uint256 reservePrice; // Minimum price at which the item can be sold
         uint256 highestBid; // Current highest bid
@@ -170,7 +170,7 @@ contract Auction is Ownable {
         string calldata itemId,
         string calldata itemName,
         string calldata itemDescription,
-        bytes32 hashOfImage,
+        string calldata hashOfImage,
         uint256 reservePrice
     ) external stakedCoinRequired belowAuctionCount hasPubKey {
         require(!compareStrings(itemId, auctionItems[itemId].itemId), "Item already exists");

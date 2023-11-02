@@ -26,13 +26,7 @@ describe("Auction Tests", async () => {
 
     it("Fails to create an auction before staking the required amount", async () => {
         await expect(
-            auctionContract.createAuctionItem(
-                "test",
-                "testItem",
-                "testDescription",
-                new Uint8Array(32),
-                1000
-            )
+            auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000)
         ).to.be.revertedWith("Not enough tokens staked to create an auction");
     });
 
@@ -40,34 +34,16 @@ describe("Auction Tests", async () => {
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
 
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         await expect(
-            auctionContract.createAuctionItem(
-                "test",
-                "testItem",
-                "testDescription",
-                new Uint8Array(32),
-                1000
-            )
+            auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000)
         ).to.be.revertedWith("Item already exists");
     });
 
     it("Successfully creates an auction inside contract", async () => {
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         let item = await auctionContract.getAuctionItem("test");
         expect(item[0]).to.equal("test");
         expect(item[1]).to.equal("testItem");
@@ -95,13 +71,7 @@ describe("Auction Tests", async () => {
         await obscurityToken.transfer(seller.address, 500);
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         await obscurityToken.connect(seller).approve(auctionContract.address, 500);
         await expect(auctionContract.connect(seller).placeBid("test", 500)).to.be.revertedWith(
             "Bid must be higher than the reserve price"
@@ -114,7 +84,7 @@ describe("Auction Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 200);
+            .createAuctionItem("test", "testItem", "testDescription", "", 200);
         await obscurityToken.connect(deployer).approve(auctionContract.address, 500);
         await auctionContract.connect(deployer).placeBid("test", 500);
         let auctionItem = await auctionContract.getAuctionItem("test");
@@ -129,7 +99,7 @@ describe("Auction Tests", async () => {
         await auctionContract.connect(seller).stakeTokens(500);
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", new Uint8Array(32), 500);
+            .createAuctionItem("test", "testItem", "testDescription", "", 500);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 700);
         await auctionContract.connect(buyer).placeBid("test", 700);
         expect((await obscurityToken.balanceOf(buyer.address)).toNumber()).to.equal(300);
@@ -144,13 +114,7 @@ describe("Auction Tests", async () => {
         await obscurityToken.transfer(buyer.address, 1500);
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         await obscurityToken.connect(buyer).approve(auctionContract.address, 1500);
         await auctionContract.connect(buyer).placeBid("test", 1500);
         await increase(60 * 60 * 48); // increase time by 2 days
@@ -162,13 +126,7 @@ describe("Auction Tests", async () => {
     it("Denies the auctioneer to relinquish tokens to himself while ongoing auctions persist", async () => {
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         await expect(auctionContract.relinquishTokensToOwner()).to.be.revertedWith(
             "You can't redeem tokens while ongoing auctions persist"
         );
@@ -177,13 +135,7 @@ describe("Auction Tests", async () => {
     it("Successfully allows the auctioneer to withdraw tokens after existing auctions concluded", async () => {
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         await increase(60 * 60 * 48); // increase time by 2 days
         await auctionContract.endAuction("test");
         await auctionContract.relinquishTokensToOwner();
@@ -193,13 +145,7 @@ describe("Auction Tests", async () => {
         await obscurityToken.transfer(buyer.address, 1500);
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test",
-            "testItem",
-            "testDescription",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
         let item = await auctionContract.getAuctionItem("test");
         let originalEndingTime = item[6].toNumber();
         await increase(60 * 60 * 24 - 300); // leave less than 5 minutes until the auction expires
@@ -217,20 +163,8 @@ describe("Auction Tests", async () => {
         await obscurityToken.transfer(buyer.address, 1500);
         await obscurityToken.approve(auctionContract.address, 500);
         await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem(
-            "test1",
-            "testItem1",
-            "testDescription1",
-            new Uint8Array(32),
-            1000
-        );
-        await auctionContract.createAuctionItem(
-            "test2",
-            "testItem2",
-            "testDescription2",
-            new Uint8Array(32),
-            1000
-        );
+        await auctionContract.createAuctionItem("test1", "testItem1", "testDescription1", "", 1000);
+        await auctionContract.createAuctionItem("test2", "testItem2", "testDescription2", "", 1000);
         let auctions = await auctionContract.getAllAuctions();
         console.log(auctions);
         expect(auctions).to.be.length(2);
