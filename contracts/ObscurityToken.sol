@@ -4,7 +4,7 @@ pragma solidity ^0.8.19;
 import "@openzeppelin/contracts/token/ERC20/extensions/ERC20Votes.sol";
 
 contract ObscurityToken is ERC20Votes {
-  uint256 public s_maxSupply = 1000000000000000000000000;
+  uint256 public s_maxSupply = 1000000 * (10**18);
 
   constructor() ERC20("ObscurityToken", "OT") ERC20Permit("ObscurityToken") {
     _mint(msg.sender, s_maxSupply);

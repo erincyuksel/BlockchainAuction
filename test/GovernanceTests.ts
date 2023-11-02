@@ -47,9 +47,9 @@ describe("Governor Voting Tests", async () => {
 
     it("Tokens to stake is changed after voting process", async () => {
         const encodedFunctionCall = auction.interface.encodeFunctionData("setTokensToStake", [
-            1000,
+            BigInt(1000 * 10 ** 18),
         ]);
-
+        console.log(encodedFunctionCall);
         // propose
         const proposalId = await propose(
             encodedFunctionCall,
@@ -76,14 +76,20 @@ describe("Governor Voting Tests", async () => {
         console.log("Executing...");
         await execute(encodedFunctionCall, "We should increase the tokens to stake to 1000!");
         const tokensToStake = await auction.getTokensToStake();
-        expect(tokensToStake.toNumber()).to.equal(1000);
+        expect(tokensToStake.toBigInt()).to.equal(BigInt(1000 * 10 ** 18));
 
         // try to create auction with old stake amount and fail
 
-        await obscurityToken.approve(auction.address, 500);
-        await auction.stakeTokens(500);
+        await obscurityToken.approve(auction.address, BigInt(500 * 10 ** 18));
+        await auction.stakeTokens(BigInt(500 * 10 ** 18));
         await expect(
-            auction.createAuctionItem("test", "testItem", "testDescription", "", 1000)
+            auction.createAuctionItem(
+                "test",
+                "testItem",
+                "testDescription",
+                "",
+                BigInt(1000 * 10 ** 18)
+            )
         ).to.be.revertedWith("Not enough tokens staked to create an auction");
     });
 
@@ -121,15 +127,39 @@ describe("Governor Voting Tests", async () => {
 
         // try to create 3 ongoing auctions
 
-        await obscurityToken.approve(auction.address, 500);
-        await auction.stakeTokens(500);
-        await auction.createAuctionItem("test1", "testItem1", "testDescription1", "", 1000);
-        await auction.createAuctionItem("test2", "testItem2", "testDescription2", "", 1000);
-        await auction.createAuctionItem("test3", "testItem3", "testDescription3", "", 1000);
+        await obscurityToken.approve(auction.address, BigInt(500 * 10 ** 18));
+        await auction.stakeTokens(BigInt(500 * 10 ** 18));
+        await auction.createAuctionItem(
+            "test1",
+            "testItem1",
+            "testDescription1",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await auction.createAuctionItem(
+            "test2",
+            "testItem2",
+            "testDescription2",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await auction.createAuctionItem(
+            "test3",
+            "testItem3",
+            "testDescription3",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
 
         // 4th one should fail
         await expect(
-            auction.createAuctionItem("test4", "testItem4", "testDescription4", "", 1000)
+            auction.createAuctionItem(
+                "test4",
+                "testItem4",
+                "testDescription4",
+                "",
+                BigInt(1000 * 10 ** 18)
+            )
         ).to.be.revertedWith("You can't have any more active auctions");
     });
 
@@ -165,9 +195,15 @@ describe("Governor Voting Tests", async () => {
         await execute(encodedFunctionCall, "Lets increase the auction duration to 2 days!");
 
         // try to create 3 ongoing auctions
-        await obscurityToken.approve(auction.address, 500);
-        await auction.stakeTokens(500);
-        await auction.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await obscurityToken.approve(auction.address, BigInt(500 * 10 ** 18));
+        await auction.stakeTokens(BigInt(500 * 10 ** 18));
+        await auction.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         await increase(60 * 60 * 48 - 3600);
         await expect(auction.endAuction("test")).to.be.revertedWith("Auction has not yet ended");
     });

@@ -24,16 +24,20 @@ describe("Escrow Tests", async () => {
     });
 
     it("Should correctly follow escrow flow", async () => {
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(BigInt(1001 * 10 ** 18)));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -43,21 +47,25 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).transitionEscrowState("test", 3);
 
         let balance = await obscurityToken.connect(seller).balanceOf(seller.address);
-        expect(balance).to.equal(1001);
+        expect(balance).to.equal(BigInt(1001 * 10 ** 18) + BigInt(20000 * 10 ** 18));
     });
 
     it("After auction, owner and winner should be able to chat", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -76,16 +84,20 @@ describe("Escrow Tests", async () => {
 
     it("Third party users shouldnt be able to use chat of a concluded auction", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -100,16 +112,20 @@ describe("Escrow Tests", async () => {
 
     it("Should fail state transition once dispute is raised", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -124,16 +140,20 @@ describe("Escrow Tests", async () => {
 
     it("Should vote in favor of seller in a case of dispute", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -147,21 +167,25 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(member1).resolveDispute("test");
 
         let balance = await obscurityToken.connect(seller).balanceOf(seller.address);
-        expect(balance).to.equal(1001);
+        expect(balance).to.equal(BigInt(1001 * 10 ** 18) + BigInt(20000 * 10 ** 18));
     });
 
     it("Should vote in favor of of buyer in a case of dispute", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -175,20 +199,24 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(member1).resolveDispute("test");
 
         let balance = await obscurityToken.connect(buyer).balanceOf(seller.address);
-        expect(balance).to.equal(1001);
+        expect(balance).to.equal(BigInt(1001 * 10 ** 18) + BigInt(20000 * 10 ** 18));
     });
     it("Should revert when someone outside of the committee tries to send chat", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
@@ -202,16 +230,20 @@ describe("Escrow Tests", async () => {
     });
     it("Successfully fetches all disputes", async () => {
         // for test purposes messages are un-encrypted
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 1000);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
 
-        await obscurityToken.transfer(buyer.address, 1001);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1001);
-        await auctionContract.connect(buyer).placeBid("test", 1001);
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
 
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");

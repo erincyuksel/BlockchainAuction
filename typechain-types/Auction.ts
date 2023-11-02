@@ -83,7 +83,7 @@ export interface AuctionInterface extends utils.Interface {
     "compareStrings(string,string)": FunctionFragment;
     "createAuctionItem(string,string,string,string,uint256)": FunctionFragment;
     "endAuction(string)": FunctionFragment;
-    "getActiveAuctioneer()": FunctionFragment;
+    "getActiveAuctioneer(address)": FunctionFragment;
     "getAllAuctions()": FunctionFragment;
     "getAllDisputeAuctions()": FunctionFragment;
     "getAuctionDuration()": FunctionFragment;
@@ -134,7 +134,7 @@ export interface AuctionInterface extends utils.Interface {
   encodeFunctionData(functionFragment: "endAuction", values: [string]): string;
   encodeFunctionData(
     functionFragment: "getActiveAuctioneer",
-    values?: undefined
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getAllAuctions",
@@ -479,6 +479,7 @@ export interface Auction extends BaseContract {
     ): Promise<ContractTransaction>;
 
     getActiveAuctioneer(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber, string[], boolean]>;
 
@@ -678,6 +679,7 @@ export interface Auction extends BaseContract {
   ): Promise<ContractTransaction>;
 
   getActiveAuctioneer(
+    sender: string,
     overrides?: CallOverrides
   ): Promise<[BigNumber, string[], boolean]>;
 
@@ -869,6 +871,7 @@ export interface Auction extends BaseContract {
     endAuction(itemId: string, overrides?: CallOverrides): Promise<void>;
 
     getActiveAuctioneer(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<[BigNumber, string[], boolean]>;
 
@@ -1033,7 +1036,10 @@ export interface Auction extends BaseContract {
       overrides?: PayableOverrides & { from?: string | Promise<string> }
     ): Promise<BigNumber>;
 
-    getActiveAuctioneer(overrides?: CallOverrides): Promise<BigNumber>;
+    getActiveAuctioneer(
+      sender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getAllAuctions(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1190,6 +1196,7 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getActiveAuctioneer(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

@@ -52,7 +52,7 @@ contract Auction is Ownable {
     mapping(address => bool) public isCommitteeMember;
     string[] auctionArr;
     string[] disputeArr;
-    uint256 tokensToStake = 500;
+    uint256 tokensToStake = 500 * (10 ** 18);
     ObscurityToken token;
 
     // fields that get edited with DAO votes
@@ -320,8 +320,8 @@ contract Auction is Ownable {
         return auctionItems[itemId].deliveryAddress;
     }
 
-    function getActiveAuctioneer() external view returns (uint256, string[] memory, bool) {
-        ActiveAuctioneer storage auctioneer = activeAuctionOwners[msg.sender];
+    function getActiveAuctioneer(address sender) external view returns (uint256, string[] memory, bool) {
+        ActiveAuctioneer storage auctioneer = activeAuctionOwners[sender];
         return (auctioneer.stakedAmount, auctioneer.activeAuctions, auctioneer.isInitialized);
     }
 

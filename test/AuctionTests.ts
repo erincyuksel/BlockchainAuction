@@ -31,34 +31,57 @@ describe("Auction Tests", async () => {
     });
 
     it("Fails to create an auction with same ID", async () => {
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
 
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         await expect(
-            auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000)
+            auctionContract.createAuctionItem(
+                "test",
+                "testItem",
+                "testDescription",
+                "",
+                BigInt(1000 * 10 ** 18)
+            )
         ).to.be.revertedWith("Item already exists");
     });
 
     it("Successfully creates an auction inside contract", async () => {
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         let item = await auctionContract.getAuctionItem("test");
         expect(item[0]).to.equal("test");
         expect(item[1]).to.equal("testItem");
-        expect(item[3].toNumber()).to.equal(1000);
+        expect(item[3].toBigInt()).to.equal(BigInt(1000 * 10 ** 18));
     });
 
     it("User successfully stakes and withdraws his tokens", async () => {
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        let sellerBalancePrev = await obscurityToken.balanceOf(seller.address);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        let sellerBalanceAfter = await obscurityToken.balanceOf(seller.address);
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
+
         let remainingTokens = await obscurityToken.connect(seller).balanceOf(seller.address);
-        expect(remainingTokens).to.equal(0);
+        expect(remainingTokens).to.equal(sellerBalancePrev);
         await auctionContract.connect(seller).relinquishTokensToOwner();
         remainingTokens = await obscurityToken.connect(seller).balanceOf(seller.address);
-        expect(remainingTokens).to.equal(500);
+        expect(remainingTokens).to.equal(sellerBalanceAfter);
     });
 
     it("Throws an event when non-existing item is tried to be fetched", async () => {
@@ -68,55 +91,85 @@ describe("Auction Tests", async () => {
     });
 
     it("Throws an event when placed bid is lower than reserve price", async () => {
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await expect(auctionContract.connect(seller).placeBid("test", 500)).to.be.revertedWith(
-            "Bid must be higher than the reserve price"
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
         );
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await expect(
+            auctionContract.connect(seller).placeBid("test", BigInt(500 * 10 ** 18))
+        ).to.be.revertedWith("Bid must be higher than the reserve price");
     });
 
     it("Successfully places a bid on a created Auction", async () => {
-        await obscurityToken.transfer(seller.address, 500);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 200);
-        await obscurityToken.connect(deployer).approve(auctionContract.address, 500);
-        await auctionContract.connect(deployer).placeBid("test", 500);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(200 * 10 ** 18));
+        await obscurityToken
+            .connect(deployer)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(deployer).placeBid("test", BigInt(500 * 10 ** 18));
         let auctionItem = await auctionContract.getAuctionItem("test");
-        expect(auctionItem[4].toNumber()).to.equal(500);
+        expect(auctionItem[4].toBigInt()).to.equal(BigInt(500 * 10 ** 18));
     });
 
     it("Successfully refunds the previous highest bidder", async () => {
         // give some of the tokens to buyer from deployer
-        await obscurityToken.transfer(buyer.address, 1000);
-        await obscurityToken.transfer(seller.address, 1000);
-        await obscurityToken.connect(seller).approve(auctionContract.address, 500);
-        await auctionContract.connect(seller).stakeTokens(500);
+        await obscurityToken.transfer(buyer.address, BigInt(1000 * 10 ** 18));
+        await obscurityToken.transfer(seller.address, BigInt(1000 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
         await auctionContract
             .connect(seller)
-            .createAuctionItem("test", "testItem", "testDescription", "", 500);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 700);
-        await auctionContract.connect(buyer).placeBid("test", 700);
-        expect((await obscurityToken.balanceOf(buyer.address)).toNumber()).to.equal(300);
-        await obscurityToken.connect(deployer).approve(auctionContract.address, 800);
-        await auctionContract.connect(deployer).placeBid("test", 800);
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(700 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(700 * 10 ** 18));
+        expect(await obscurityToken.balanceOf(buyer.address)).to.equal(
+            BigInt(300 * 10 ** 18) + BigInt(20000 * 10 ** 18)
+        );
+        await obscurityToken
+            .connect(deployer)
+            .approve(auctionContract.address, BigInt(800 * 10 ** 18));
+        await auctionContract.connect(deployer).placeBid("test", BigInt(800 * 10 ** 18));
 
-        expect((await obscurityToken.balanceOf(buyer.address)).toNumber()).to.equal(1000);
+        expect(await obscurityToken.balanceOf(buyer.address)).to.equal(
+            BigInt(1000 * 10 ** 18) + BigInt(20000 * 10 ** 18)
+        );
     });
 
     it("Successfully finalizes the auction", async () => {
         // give some of the tokens to buyer from deployer
-        await obscurityToken.transfer(buyer.address, 1500);
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1500);
-        await auctionContract.connect(buyer).placeBid("test", 1500);
+        await obscurityToken.transfer(buyer.address, BigInt(1500 * 10 ** 18));
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1500 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1500 * 10 ** 18));
         await increase(60 * 60 * 48); // increase time by 2 days
         await auctionContract.endAuction("test");
         let item = await auctionContract.getAuctionItem("test");
@@ -124,33 +177,53 @@ describe("Auction Tests", async () => {
     });
 
     it("Denies the auctioneer to relinquish tokens to himself while ongoing auctions persist", async () => {
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         await expect(auctionContract.relinquishTokensToOwner()).to.be.revertedWith(
             "You can't redeem tokens while ongoing auctions persist"
         );
     });
 
     it("Successfully allows the auctioneer to withdraw tokens after existing auctions concluded", async () => {
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         await increase(60 * 60 * 48); // increase time by 2 days
         await auctionContract.endAuction("test");
         await auctionContract.relinquishTokensToOwner();
     });
 
     it("Successfully extends auction time when last bid is made in last 5 minutes", async () => {
-        await obscurityToken.transfer(buyer.address, 1500);
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test", "testItem", "testDescription", "", 1000);
+        await obscurityToken.transfer(buyer.address, BigInt(1500 * 10 ** 18));
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test",
+            "testItem",
+            "testDescription",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         let item = await auctionContract.getAuctionItem("test");
         let originalEndingTime = item[6].toNumber();
         await increase(60 * 60 * 24 - 300); // leave less than 5 minutes until the auction expires
-        await obscurityToken.connect(buyer).approve(auctionContract.address, 1100);
-        await auctionContract.connect(buyer).placeBid("test", 1100);
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1100 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1100 * 10 ** 18));
         item = await auctionContract.getAuctionItem("test");
         let extendedEndingTime = item[6].toNumber();
 
@@ -160,13 +233,24 @@ describe("Auction Tests", async () => {
         );
     });
     it("Successfully fetches all auctions", async () => {
-        await obscurityToken.transfer(buyer.address, 1500);
-        await obscurityToken.approve(auctionContract.address, 500);
-        await auctionContract.stakeTokens(500);
-        await auctionContract.createAuctionItem("test1", "testItem1", "testDescription1", "", 1000);
-        await auctionContract.createAuctionItem("test2", "testItem2", "testDescription2", "", 1000);
+        await obscurityToken.transfer(buyer.address, BigInt(1500 * 10 ** 18));
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test1",
+            "testItem1",
+            "testDescription1",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await auctionContract.createAuctionItem(
+            "test2",
+            "testItem2",
+            "testDescription2",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
         let auctions = await auctionContract.getAllAuctions();
-        console.log(auctions);
         expect(auctions).to.be.length(2);
     });
 });
