@@ -45,11 +45,20 @@ contract Auction is Ownable {
         bool isInitialized;
     }
 
+    struct UserBids {
+        string[] auctionIds;
+        mapping(string => bool) auctionExists;
+    }
+
     // fields
     mapping(string => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
     mapping(address => string) public pubKeys;
     mapping(address => bool) public isCommitteeMember;
+    mapping(address => string[]) public ownerAuctions;
+    mapping(address => UserBids) userBidsMapping;
+
+
     string[] auctionArr;
     string[] disputeArr;
     uint256 tokensToStake = 500 * (10 ** 18);
@@ -199,6 +208,7 @@ contract Auction is Ownable {
 
         activeAuctionOwners[msg.sender].activeAuctions.push(itemId);
         auctionArr.push(itemId);
+        ownerAuctions[msg.sender].push(itemId);
         emit AuctionItemCreated(itemId, itemName);
     }
 
@@ -230,6 +240,10 @@ contract Auction is Ownable {
                 500 -
                 (item.auctionEndTime - block.timestamp) +
                 item.auctionEndTime;
+        }
+        if(!userBidsMapping[msg.sender].auctionExists[itemId]){
+            userBidsMapping[msg.sender].auctionIds.push(itemId);
+            userBidsMapping[msg.sender].auctionExists[itemId] = true;
         }
     }
 
@@ -281,6 +295,25 @@ contract Auction is Ownable {
     }
 
     // GETTERS
+
+
+    function getMyBidAuctions() external view returns (AuctionItem[] memory) {
+        string[] memory itemArray = userBidsMapping[msg.sender].auctionIds;
+        AuctionItem[] memory items = new AuctionItem[](itemArray.length);
+        for(uint i = 0; i<itemArray.length; i++){
+            items[i] = auctionItems[itemArray[i]];
+        }
+        return items;
+    }
+
+    function getMyOwnerAuctions () external view returns (AuctionItem[] memory) {
+        string[] memory itemArray = ownerAuctions[msg.sender];
+        AuctionItem[] memory items = new AuctionItem[](itemArray.length);
+        for(uint i = 0; i<itemArray.length; i++){
+            items[i] = auctionItems[itemArray[i]];
+        }
+        return items;
+    }
 
     // Function to get information about a specific auction item
     function getAuctionItem(

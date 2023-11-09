@@ -253,4 +253,45 @@ describe("Auction Tests", async () => {
         let auctions = await auctionContract.getAllAuctions();
         expect(auctions).to.be.length(2);
     });
+
+    it("Shouldn't add duplicate values to users previously bidded auction array", async () => {
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test1",
+            "testItem1",
+            "testDescription1",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(3500 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test1", BigInt(1500 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test1", BigInt(2000 * 10 ** 18));
+        let previouslyBidAuctions = await auctionContract.connect(buyer).getMyBidAuctions();
+        expect(previouslyBidAuctions).to.be.lengthOf(1);
+    });
+
+    it("Successfully adds created auction to users created auctions history", async () => {
+        await obscurityToken.transfer(buyer.address, BigInt(1500 * 10 ** 18));
+        await obscurityToken.approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract.createAuctionItem(
+            "test1",
+            "testItem1",
+            "testDescription1",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        await auctionContract.createAuctionItem(
+            "test2",
+            "testItem2",
+            "testDescription2",
+            "",
+            BigInt(1000 * 10 ** 18)
+        );
+        let createdAuctions = await auctionContract.getMyOwnerAuctions();
+        expect(createdAuctions).to.be.lengthOf(2);
+    });
 });
