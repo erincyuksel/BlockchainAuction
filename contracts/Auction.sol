@@ -297,8 +297,8 @@ contract Auction is Ownable {
     // GETTERS
 
 
-    function getMyBidAuctions() external view returns (AuctionItem[] memory) {
-        string[] memory itemArray = userBidsMapping[msg.sender].auctionIds;
+    function getMyBidAuctions(address sender) external view returns (AuctionItem[] memory) {
+        string[] memory itemArray = userBidsMapping[sender].auctionIds;
         AuctionItem[] memory items = new AuctionItem[](itemArray.length);
         for(uint i = 0; i<itemArray.length; i++){
             items[i] = auctionItems[itemArray[i]];
@@ -306,8 +306,8 @@ contract Auction is Ownable {
         return items;
     }
 
-    function getMyOwnerAuctions () external view returns (AuctionItem[] memory) {
-        string[] memory itemArray = ownerAuctions[msg.sender];
+    function getMyOwnerAuctions (address sender) external view returns (AuctionItem[] memory) {
+        string[] memory itemArray = ownerAuctions[sender];
         AuctionItem[] memory items = new AuctionItem[](itemArray.length);
         for(uint i = 0; i<itemArray.length; i++){
             items[i] = auctionItems[itemArray[i]];

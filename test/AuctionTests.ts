@@ -269,7 +269,9 @@ describe("Auction Tests", async () => {
             .approve(auctionContract.address, BigInt(3500 * 10 ** 18));
         await auctionContract.connect(buyer).placeBid("test1", BigInt(1500 * 10 ** 18));
         await auctionContract.connect(buyer).placeBid("test1", BigInt(2000 * 10 ** 18));
-        let previouslyBidAuctions = await auctionContract.connect(buyer).getMyBidAuctions();
+        let previouslyBidAuctions = await auctionContract
+            .connect(buyer)
+            .getMyBidAuctions(buyer.address);
         expect(previouslyBidAuctions).to.be.lengthOf(1);
     });
 
@@ -291,7 +293,7 @@ describe("Auction Tests", async () => {
             "",
             BigInt(1000 * 10 ** 18)
         );
-        let createdAuctions = await auctionContract.getMyOwnerAuctions();
+        let createdAuctions = await auctionContract.getMyOwnerAuctions(deployer.address);
         expect(createdAuctions).to.be.lengthOf(2);
     });
 });

@@ -92,8 +92,8 @@ export interface AuctionInterface extends utils.Interface {
     "getConcurrentAuctionsPerUser()": FunctionFragment;
     "getCurrentTimestamp()": FunctionFragment;
     "getDeliveryAddress(string)": FunctionFragment;
-    "getMyBidAuctions()": FunctionFragment;
-    "getMyOwnerAuctions()": FunctionFragment;
+    "getMyBidAuctions(address)": FunctionFragment;
+    "getMyOwnerAuctions(address)": FunctionFragment;
     "getPubKey(address)": FunctionFragment;
     "getTokensToStake()": FunctionFragment;
     "isCommitteeMember(address)": FunctionFragment;
@@ -173,11 +173,11 @@ export interface AuctionInterface extends utils.Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "getMyBidAuctions",
-    values?: undefined
+    values: [string]
   ): string;
   encodeFunctionData(
     functionFragment: "getMyOwnerAuctions",
-    values?: undefined
+    values: [string]
   ): string;
   encodeFunctionData(functionFragment: "getPubKey", values: [string]): string;
   encodeFunctionData(
@@ -544,10 +544,12 @@ export interface Auction extends BaseContract {
     ): Promise<[string]>;
 
     getMyBidAuctions(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<[Auction.AuctionItemStructOutput[]]>;
 
     getMyOwnerAuctions(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<[Auction.AuctionItemStructOutput[]]>;
 
@@ -756,10 +758,12 @@ export interface Auction extends BaseContract {
   ): Promise<string>;
 
   getMyBidAuctions(
+    sender: string,
     overrides?: CallOverrides
   ): Promise<Auction.AuctionItemStructOutput[]>;
 
   getMyOwnerAuctions(
+    sender: string,
     overrides?: CallOverrides
   ): Promise<Auction.AuctionItemStructOutput[]>;
 
@@ -962,10 +966,12 @@ export interface Auction extends BaseContract {
     ): Promise<string>;
 
     getMyBidAuctions(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<Auction.AuctionItemStructOutput[]>;
 
     getMyOwnerAuctions(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<Auction.AuctionItemStructOutput[]>;
 
@@ -1135,9 +1141,15 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<BigNumber>;
 
-    getMyBidAuctions(overrides?: CallOverrides): Promise<BigNumber>;
+    getMyBidAuctions(
+      sender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
-    getMyOwnerAuctions(overrides?: CallOverrides): Promise<BigNumber>;
+    getMyOwnerAuctions(
+      sender: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     getPubKey(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1312,9 +1324,13 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
-    getMyBidAuctions(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+    getMyBidAuctions(
+      sender: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     getMyOwnerAuctions(
+      sender: string,
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 
