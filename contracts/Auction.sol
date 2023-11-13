@@ -65,7 +65,7 @@ contract Auction is Ownable {
     ObscurityToken token;
 
     // fields that get edited with DAO votes
-    uint64 auctionDuration = 60 * 60 * 24; // 1 day
+    uint64 auctionDuration = 60 * 2; // 120 seconds
     uint8 concurrentAuctionsPerUser = 2;
 
     // events
@@ -235,9 +235,9 @@ contract Auction is Ownable {
 
         item.highestBid = bidAmount;
         item.highestBidder = payable(msg.sender);
-        if ((item.auctionEndTime - block.timestamp) <= 500) {
+        if ((item.auctionEndTime - block.timestamp) <= 30) {
             auctionItems[itemId].auctionEndTime =
-                500 -
+                30 -
                 (item.auctionEndTime - block.timestamp) +
                 item.auctionEndTime;
         }
@@ -463,6 +463,7 @@ contract Auction is Ownable {
 
     function raiseDispute(string calldata itemId) external itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
+        require(item.escrowState != EscrowState.Dispute, "There is already a risen dispute");
         require(
             (item.highestBidder == msg.sender || msg.sender == item.seller) && item.ended,
             "Auction has not ended yet, or you are not the winner or owner of the item"
