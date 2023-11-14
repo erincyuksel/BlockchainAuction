@@ -42,7 +42,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(buyer).transitionEscrowState("test", 3);
 
@@ -70,7 +70,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(buyer).transitionEscrowState("test", 3);
 
@@ -102,7 +102,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(buyer).transitionEscrowState("test", 3);
         await expect(auctionContract.connect(deployer).sendChat("test", "Hey!")).to.be.revertedWith(
@@ -130,7 +130,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(seller).raiseDispute("test");
         await expect(
@@ -158,7 +158,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(seller).raiseDispute("test");
         await auctionContract.connect(member1).voteOnDispute("test", 1);
@@ -190,7 +190,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(seller).raiseDispute("test");
         await auctionContract.connect(member1).voteOnDispute("test", 1);
@@ -221,7 +221,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(seller).raiseDispute("test");
         await expect(
@@ -248,7 +248,7 @@ describe("Escrow Tests", async () => {
         await increase(60 * 60 * 24);
         await auctionContract.connect(seller).endAuction("test");
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
-        await auctionContract.connect(seller).transitionEscrowState("test", 1);
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
         await auctionContract.connect(seller).raiseDispute("test");
         let disputes = await auctionContract.getAllDisputeAuctions();

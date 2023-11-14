@@ -434,17 +434,13 @@ contract Auction is Ownable {
             "Cant resume escrow processes without dispute resolution"
         );
         require(
-            (msg.sender == item.seller &&
+            (msg.sender == item.highestBidder &&
                 nextState == EscrowState.PreparingItem &&
                 (item.escrowState == EscrowState.AwaitingDeliveryAddress ||
                     item.escrowState == EscrowState.DisputeResolved)) ||
                 (msg.sender == item.seller &&
                     nextState == EscrowState.ItemOnDelivery &&
                     (item.escrowState == EscrowState.PreparingItem ||
-                        item.escrowState == EscrowState.DisputeResolved)) ||
-                (msg.sender == item.highestBidder &&
-                    nextState == EscrowState.ItemReceived &&
-                    (item.escrowState == EscrowState.ItemOnDelivery ||
                         item.escrowState == EscrowState.DisputeResolved)) ||
                 (msg.sender == item.highestBidder &&
                     nextState == EscrowState.ItemReceived &&
@@ -463,6 +459,8 @@ contract Auction is Ownable {
 
     function raiseDispute(string calldata itemId) external itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
+        require(item.escrowState != EscrowState.ItemReceived, "Auction has been already finalized");
+        require(item.escrowState != EscrowState.DisputeResolved && item.escrowState != EscrowState.Cancelled, "Dispute has already been resolved");
         require(item.escrowState != EscrowState.Dispute, "There is already a risen dispute");
         require(
             (item.highestBidder == msg.sender || msg.sender == item.seller) && item.ended,
