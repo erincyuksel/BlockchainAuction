@@ -89,6 +89,8 @@ export interface AuctionInterface extends utils.Interface {
     "getAuctionDuration()": FunctionFragment;
     "getAuctionItem(string)": FunctionFragment;
     "getChatLogOfItem(string)": FunctionFragment;
+    "getCommitteeChatLogOfItem(string)": FunctionFragment;
+    "getCommitteeMembers()": FunctionFragment;
     "getConcurrentAuctionsPerUser()": FunctionFragment;
     "getCurrentTimestamp()": FunctionFragment;
     "getDeliveryAddress(string)": FunctionFragment;
@@ -158,6 +160,14 @@ export interface AuctionInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getChatLogOfItem",
     values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCommitteeChatLogOfItem",
+    values: [string]
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getCommitteeMembers",
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "getConcurrentAuctionsPerUser",
@@ -295,6 +305,14 @@ export interface AuctionInterface extends utils.Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "getChatLogOfItem",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCommitteeChatLogOfItem",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getCommitteeMembers",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -532,6 +550,13 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<[string[]]>;
 
+    getCommitteeChatLogOfItem(
+      itemId: string,
+      overrides?: CallOverrides
+    ): Promise<[string[]]>;
+
+    getCommitteeMembers(overrides?: CallOverrides): Promise<[string[]]>;
+
     getConcurrentAuctionsPerUser(
       overrides?: CallOverrides
     ): Promise<[BigNumber]>;
@@ -748,6 +773,13 @@ export interface Auction extends BaseContract {
     overrides?: CallOverrides
   ): Promise<string[]>;
 
+  getCommitteeChatLogOfItem(
+    itemId: string,
+    overrides?: CallOverrides
+  ): Promise<string[]>;
+
+  getCommitteeMembers(overrides?: CallOverrides): Promise<string[]>;
+
   getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
 
   getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
@@ -956,6 +988,13 @@ export interface Auction extends BaseContract {
       overrides?: CallOverrides
     ): Promise<string[]>;
 
+    getCommitteeChatLogOfItem(
+      itemId: string,
+      overrides?: CallOverrides
+    ): Promise<string[]>;
+
+    getCommitteeMembers(overrides?: CallOverrides): Promise<string[]>;
+
     getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
 
     getCurrentTimestamp(overrides?: CallOverrides): Promise<BigNumber>;
@@ -1131,6 +1170,13 @@ export interface Auction extends BaseContract {
       itemId: string,
       overrides?: CallOverrides
     ): Promise<BigNumber>;
+
+    getCommitteeChatLogOfItem(
+      itemId: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
+
+    getCommitteeMembers(overrides?: CallOverrides): Promise<BigNumber>;
 
     getConcurrentAuctionsPerUser(overrides?: CallOverrides): Promise<BigNumber>;
 
@@ -1308,6 +1354,15 @@ export interface Auction extends BaseContract {
 
     getChatLogOfItem(
       itemId: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getCommitteeChatLogOfItem(
+      itemId: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
+
+    getCommitteeMembers(
       overrides?: CallOverrides
     ): Promise<PopulatedTransaction>;
 

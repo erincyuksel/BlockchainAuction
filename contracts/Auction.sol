@@ -61,6 +61,7 @@ contract Auction is Ownable {
 
     string[] auctionArr;
     string[] disputeArr;
+    address[] committeeMembers;
     uint256 tokensToStake = 500 * (10 ** 18);
     ObscurityToken token;
 
@@ -135,6 +136,9 @@ contract Auction is Ownable {
         isCommitteeMember[0x90F79bf6EB2c4f870365E785982E1f101E93b906] = true;
         isCommitteeMember[0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65] = true;
         isCommitteeMember[0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc] = true;
+        committeeMembers.push(0x90F79bf6EB2c4f870365E785982E1f101E93b906);
+        committeeMembers.push(0x15d34AAf54267DB7D7c367839AAf71A00a2C6A65);
+        committeeMembers.push(0x9965507D1a55bcC2695C58ba16FB37d819B0A4dc);
     }
 
     // Functions to be called by DAO
@@ -296,6 +300,9 @@ contract Auction is Ownable {
 
     // GETTERS
 
+    function getCommitteeMembers() external view returns(address[] memory){
+        return committeeMembers;
+    }
 
     function getMyBidAuctions(address sender) external view returns (AuctionItem[] memory) {
         string[] memory itemArray = userBidsMapping[sender].auctionIds;
@@ -385,6 +392,16 @@ contract Auction is Ownable {
         );
 
         return item.privateChatLogs;
+    }
+
+    function getCommitteeChatLogOfItem(string calldata itemId)external view itemExists(itemId) returns (string[] memory) {
+        AuctionItem memory item = auctionItems[itemId];
+        require(
+            (item.highestBidder == msg.sender || msg.sender == item.seller || isCommitteeMember[msg.sender]) && item.ended,
+            "Auction has not ended yet, or you are not the winner or owner of the item"
+        );
+
+        return item.committeeChatLogs;
     }
 
     function getPubKey(address adr) external view returns (string memory) {
