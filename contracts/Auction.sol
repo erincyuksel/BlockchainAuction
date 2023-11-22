@@ -515,11 +515,11 @@ contract Auction is Ownable {
     ) external payable itemExists(itemId) hasDispute(itemId) onlyCommitteeMember {
         AuctionItem storage item = auctionItems[itemId];
         if (item.yesVotes >= item.noVotes) {
-            token.transfer(item.seller, item.highestBid);
-            item.escrowState = EscrowState.DisputeResolved;
-        } else {
             token.transfer(item.highestBidder, item.highestBid);
             item.escrowState = EscrowState.Cancelled;
+        } else {
+            token.transfer(item.seller, item.highestBid);
+            item.escrowState = EscrowState.DisputeResolved;
         }
     }
 
