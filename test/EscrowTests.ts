@@ -254,4 +254,32 @@ describe("Escrow Tests", async () => {
         let disputes = await auctionContract.getAllDisputeAuctions();
         expect(disputes).to.be.length(1);
     });
+    it("Committee members cannot vote on the same dispute twice", async () => {
+        // for test purposes messages are un-encrypted
+        await obscurityToken.transfer(seller.address, BigInt(500 * 10 ** 18));
+        await obscurityToken
+            .connect(seller)
+            .approve(auctionContract.address, BigInt(500 * 10 ** 18));
+        await auctionContract.connect(seller).stakeTokens(BigInt(500 * 10 ** 18));
+        await auctionContract
+            .connect(seller)
+            .createAuctionItem("test", "testItem", "testDescription", "", BigInt(1000 * 10 ** 18));
+
+        await obscurityToken.transfer(buyer.address, BigInt(1001 * 10 ** 18));
+        await obscurityToken
+            .connect(buyer)
+            .approve(auctionContract.address, BigInt(1001 * 10 ** 18));
+        await auctionContract.connect(buyer).placeBid("test", BigInt(1001 * 10 ** 18));
+
+        await increase(60 * 60 * 24);
+        await auctionContract.connect(seller).endAuction("test");
+        await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
+        await auctionContract.connect(buyer).transitionEscrowState("test", 1);
+        await auctionContract.connect(seller).transitionEscrowState("test", 2);
+        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(member1).voteOnDispute("test", 1);
+        await expect(auctionContract.connect(member1).voteOnDispute("test", 1)).to.be.revertedWith(
+            "You have already voted on this dispute!"
+        );
+    });
 });

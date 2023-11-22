@@ -50,6 +50,10 @@ contract Auction is Ownable {
         mapping(string => bool) auctionExists;
     }
 
+    struct VoteRecord {
+        mapping(address => bool) addressHasVoted;
+    }
+
     // fields
     mapping(string => AuctionItem) public auctionItems;
     mapping(address => ActiveAuctioneer) public activeAuctionOwners;
@@ -57,6 +61,7 @@ contract Auction is Ownable {
     mapping(address => bool) public isCommitteeMember;
     mapping(address => string[]) public ownerAuctions;
     mapping(address => UserBids) userBidsMapping;
+    mapping(string => VoteRecord) voteRecords;
 
 
     string[] auctionArr;
@@ -300,6 +305,10 @@ contract Auction is Ownable {
 
     // GETTERS
 
+    function getUserVoteStatus(string calldata itemId, address voterAddress) external view itemExists(itemId) returns(bool){
+        return voteRecords[itemId].addressHasVoted[voterAddress];
+    }
+
     function getCommitteeMembers() external view returns(address[] memory){
         return committeeMembers;
     }
@@ -492,11 +501,13 @@ contract Auction is Ownable {
         uint8 vote
     ) external itemExists(itemId) onlyCommitteeMember hasDispute(itemId) {
         AuctionItem storage item = auctionItems[itemId];
+        require(!voteRecords[itemId].addressHasVoted[msg.sender], "You have already voted on this dispute!");
         if (vote == 1) {
             item.yesVotes++;
         } else {
             item.noVotes++;
         }
+        voteRecords[itemId].addressHasVoted[msg.sender] = true;
     }
 
     function resolveDispute(

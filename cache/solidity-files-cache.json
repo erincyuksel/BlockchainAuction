@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "C:\\Users\\PC\\Desktop\\EthereumUdemy\\Masters_GradProject\\contracts\\Auction.sol": {
-      "lastModificationDate": 1700156583908,
-      "contentHash": "95bb2aeb0fcdf9ceeff4d1dd05a84064",
+      "lastModificationDate": 1700675723994,
+      "contentHash": "641146cb964a1ac9687f433bd56db292",
       "sourceName": "contracts/Auction.sol",
       "solcConfig": {
         "version": "0.8.19",

@@ -98,6 +98,7 @@ export interface AuctionInterface extends utils.Interface {
     "getMyOwnerAuctions(address)": FunctionFragment;
     "getPubKey(address)": FunctionFragment;
     "getTokensToStake()": FunctionFragment;
+    "getUserVoteStatus(string,address)": FunctionFragment;
     "isCommitteeMember(address)": FunctionFragment;
     "owner()": FunctionFragment;
     "ownerAuctions(address,uint256)": FunctionFragment;
@@ -193,6 +194,10 @@ export interface AuctionInterface extends utils.Interface {
   encodeFunctionData(
     functionFragment: "getTokensToStake",
     values?: undefined
+  ): string;
+  encodeFunctionData(
+    functionFragment: "getUserVoteStatus",
+    values: [string, string]
   ): string;
   encodeFunctionData(
     functionFragment: "isCommitteeMember",
@@ -338,6 +343,10 @@ export interface AuctionInterface extends utils.Interface {
   decodeFunctionResult(functionFragment: "getPubKey", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "getTokensToStake",
+    data: BytesLike
+  ): Result;
+  decodeFunctionResult(
+    functionFragment: "getUserVoteStatus",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -582,6 +591,12 @@ export interface Auction extends BaseContract {
 
     getTokensToStake(overrides?: CallOverrides): Promise<[BigNumber]>;
 
+    getUserVoteStatus(
+      itemId: string,
+      voterAddress: string,
+      overrides?: CallOverrides
+    ): Promise<[boolean]>;
+
     isCommitteeMember(
       arg0: string,
       overrides?: CallOverrides
@@ -803,6 +818,12 @@ export interface Auction extends BaseContract {
 
   getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
 
+  getUserVoteStatus(
+    itemId: string,
+    voterAddress: string,
+    overrides?: CallOverrides
+  ): Promise<boolean>;
+
   isCommitteeMember(arg0: string, overrides?: CallOverrides): Promise<boolean>;
 
   owner(overrides?: CallOverrides): Promise<string>;
@@ -1018,6 +1039,12 @@ export interface Auction extends BaseContract {
 
     getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
 
+    getUserVoteStatus(
+      itemId: string,
+      voterAddress: string,
+      overrides?: CallOverrides
+    ): Promise<boolean>;
+
     isCommitteeMember(
       arg0: string,
       overrides?: CallOverrides
@@ -1200,6 +1227,12 @@ export interface Auction extends BaseContract {
     getPubKey(adr: string, overrides?: CallOverrides): Promise<BigNumber>;
 
     getTokensToStake(overrides?: CallOverrides): Promise<BigNumber>;
+
+    getUserVoteStatus(
+      itemId: string,
+      voterAddress: string,
+      overrides?: CallOverrides
+    ): Promise<BigNumber>;
 
     isCommitteeMember(
       arg0: string,
@@ -1395,6 +1428,12 @@ export interface Auction extends BaseContract {
     ): Promise<PopulatedTransaction>;
 
     getTokensToStake(overrides?: CallOverrides): Promise<PopulatedTransaction>;
+
+    getUserVoteStatus(
+      itemId: string,
+      voterAddress: string,
+      overrides?: CallOverrides
+    ): Promise<PopulatedTransaction>;
 
     isCommitteeMember(
       arg0: string,
