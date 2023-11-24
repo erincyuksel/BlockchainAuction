@@ -427,7 +427,7 @@ contract Auction is Ownable {
 
     function getAllDisputeAuctions() external view returns (AuctionItem[] memory) {
         AuctionItem[] memory items = new AuctionItem[](disputeArr.length);
-        for (uint i = 0; i < auctionArr.length; i++) {
+        for (uint i = 0; i < disputeArr.length; i++) {
             items[i] = auctionItems[disputeArr[i]];
         }
         return items;
