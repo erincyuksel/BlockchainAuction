@@ -132,7 +132,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         await expect(
             auctionContract.connect(buyer).transitionEscrowState("test", 3)
         ).to.be.revertedWith("Cant resume escrow processes without dispute resolution");
@@ -160,7 +160,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         await auctionContract.connect(member1).voteOnDispute("test", 0);
         await auctionContract.connect(member2).voteOnDispute("test", 0);
         await auctionContract.connect(member3).voteOnDispute("test", 0);
@@ -192,7 +192,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         await auctionContract.connect(member1).voteOnDispute("test", 1);
         await auctionContract.connect(member2).voteOnDispute("test", 1);
         await auctionContract.connect(member3).voteOnDispute("test", 1);
@@ -223,7 +223,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         await expect(
             auctionContract.connect(outsider).sendCommitteeChat("test", "im an outsider!")
         ).to.be.revertedWith("You do not have privileges to chat in this dispute");
@@ -250,7 +250,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         let disputes = await auctionContract.getAllDisputeAuctions();
         expect(disputes).to.be.length(1);
     });
@@ -276,7 +276,7 @@ describe("Escrow Tests", async () => {
         await auctionContract.connect(buyer).setDeliveryAddress("test", "my house");
         await auctionContract.connect(buyer).transitionEscrowState("test", 1);
         await auctionContract.connect(seller).transitionEscrowState("test", 2);
-        await auctionContract.connect(seller).raiseDispute("test");
+        await auctionContract.connect(seller).raiseDispute("test", 0);
         await auctionContract.connect(member1).voteOnDispute("test", 1);
         await expect(auctionContract.connect(member1).voteOnDispute("test", 1)).to.be.revertedWith(
             "You have already voted on this dispute!"

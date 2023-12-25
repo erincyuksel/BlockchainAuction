@@ -35,6 +35,7 @@ contract Auction is Ownable {
         string[] privateChatLogs; // Chat log between winner and owner
         string[] committeeChatLogs; // In case of dispute, discussion will be held here
         EscrowState escrowState;
+        EscrowState stateBeforeDispute;
         uint8 yesVotes; // Vote of committee members in favor of finalizing auction
         uint8 noVotes; // Vote of committee member in favor of canceling auction
     }
@@ -211,6 +212,7 @@ contract Auction is Ownable {
             privateChatLogs: init,
             committeeChatLogs: init,
             escrowState: EscrowState.AwaitingDeliveryAddress,
+            stateBeforeDispute: EscrowState.AwaitingDeliveryAddress,
             yesVotes: 0,
             noVotes: 0
         });
@@ -346,7 +348,8 @@ contract Auction is Ownable {
             uint256,
             address payable,
             uint256,
-            bool
+            bool,
+            EscrowState stateBeforeDispute
         )
     {
         AuctionItem storage item = auctionItems[itemId];
@@ -359,7 +362,8 @@ contract Auction is Ownable {
             item.highestBid,
             item.highestBidder,
             item.auctionEndTime,
-            item.ended
+            item.ended,
+            item.stateBeforeDispute
         );
     }
 
@@ -483,7 +487,7 @@ contract Auction is Ownable {
         }
     }
 
-    function raiseDispute(string calldata itemId) external itemExists(itemId) {
+    function raiseDispute(string calldata itemId, EscrowState currentState) external itemExists(itemId) {
         AuctionItem storage item = auctionItems[itemId];
         require(item.escrowState != EscrowState.ItemReceived, "Auction has been already finalized");
         require(item.escrowState != EscrowState.DisputeResolved && item.escrowState != EscrowState.Cancelled, "Dispute has already been resolved");
@@ -493,6 +497,7 @@ contract Auction is Ownable {
             "Auction has not ended yet, or you are not the winner or owner of the item"
         );
         item.escrowState = EscrowState.Dispute;
+        item.stateBeforeDispute = currentState;
         disputeArr.push(itemId);
     }
 
